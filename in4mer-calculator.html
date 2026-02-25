@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>in4mer Screen Calculator — ATG-C</title>
+  <meta name="description" content="Plan your in4mer CRISPR/enAsCas12a pooled screen — calculate library size, cell numbers, gDNA requirements, and sequencing depth.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Calculator-specific styles ─────────────────────────── */
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Main Content ─────────────────────────────────────── */
+    .page-main {
+      flex: 1;
+      max-width: 700px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 100px 24px 64px;
+    }
+
+    .calc-page-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .calc-page-subtitle {
+      font-size: 14px;
+      color: #6B7280;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* ── Calculator Card ──────────────────────────────────── */
+    .calc-card {
+      background: #F8FAFC;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 32px;
+    }
+
+    .calc-section-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      margin-top: 0;
+    }
+
+    .calc-section-label + .form-row {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .form-group .form-hint {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: #9CA3AF;
+      margin-top: 4px;
+    }
+
+    .form-group select,
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 400;
+      color: #374151;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      transition: border-color 0.15s;
+    }
+
+    .form-group select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      cursor: pointer;
+    }
+
+    .form-group input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .form-group input[type="number"]::-webkit-outer-spin-button,
+    .form-group input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .form-group select:hover,
+    .form-group input[type="number"]:hover {
+      border-color: #9CA3AF;
+    }
+
+    .form-group select:focus,
+    .form-group input[type="number"]:focus {
+      outline: none;
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    /* Two-column row */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-row .form-group {
+      margin-bottom: 0;
+    }
+
+    /* Preset buttons */
+    .preset-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      padding: 6px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      border-color: #9CA3AF;
+      background: #F9FAFB;
+    }
+
+    .preset-btn.is-active {
+      border-color: #2563EB;
+      background: #EFF6FF;
+      color: #2563EB;
+    }
+
+    /* Section divider within card */
+    .calc-divider {
+      border: none;
+      border-top: 1px solid #E5E7EB;
+      margin: 28px 0;
+    }
+
+    /* ── Results ──────────────────────────────────────────── */
+    .results {
+      margin-top: 32px;
+      border-top: 1px solid #E5E7EB;
+      padding-top: 24px;
+    }
+
+    .results-heading {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .result-group-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .result-group-label:first-child {
+      margin-top: 0;
+    }
+
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 4px 0;
+      font-size: 15px;
+      font-weight: 400;
+      color: #374151;
+    }
+
+    .result-line .label {
+      flex: 1;
+    }
+
+    .result-line .value {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-weight: 500;
+      color: #111827;
+      white-space: nowrap;
+      margin-left: 16px;
+    }
+
+    .result-line.indent {
+      padding-left: 16px;
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    .result-line.indent .value {
+      font-weight: 400;
+      color: #6B7280;
+    }
+
+    .result-divider {
+      border: none;
+      border-top: 1px solid #E5E7EB;
+      margin: 12px 0;
+    }
+
+    .result-highlight {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 10px 14px;
+      margin-top: 8px;
+      background: #EFF6FF;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2563EB;
+    }
+
+    .result-note {
+      margin-top: 16px;
+      padding: 12px;
+      background: #FEF3C7;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #92400E;
+      line-height: 1.5;
+    }
+
+    .result-info {
+      margin-top: 12px;
+      padding: 12px;
+      background: #EFF6FF;
+      border-left: 4px solid #2563EB;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      color: #1E40AF;
+      line-height: 1.5;
+    }
+
+    /* ── Assumptions toggle ────────────────────────────────── */
+    .assumptions-toggle {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    .assumptions-toggle summary {
+      cursor: pointer;
+      font-weight: 500;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .assumptions-toggle summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .assumptions-toggle summary::marker {
+      display: none;
+      content: "";
+    }
+
+    .assumptions-toggle summary::before {
+      content: "+";
+      font-size: 14px;
+      font-weight: 400;
+      color: #9CA3AF;
+    }
+
+    .assumptions-toggle[open] summary::before {
+      content: "\2212";
+    }
+
+    .assumptions-list {
+      margin-top: 10px;
+      padding-left: 18px;
+      list-style: disc;
+    }
+
+    .assumptions-list li {
+      margin-bottom: 4px;
+      line-height: 1.5;
+    }
+
+    /* ── Back link ──────────────────────────────────────────── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6B7280;
+      margin-bottom: 20px;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover {
+      color: #2563EB;
+    }
+
+    .back-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .page-main { padding: 80px 16px 48px; }
+      .calc-card { padding: 20px; }
+      .calc-page-title { font-size: 26px; }
+      .result-highlight { font-size: 15px; }
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .form-row .form-group {
+        margin-bottom: 20px;
+      }
+      .form-row .form-group:last-child {
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== STICKY NAV ===== -->
+  <header class="site-header" id="site-header">
+    <nav class="nav-container" aria-label="Main navigation">
+      <a href="index.html" class="nav-logo" aria-label="ATG-C home">
+        <img src="images/atgc-logo.svg" alt="ATG-C" width="140" height="40">
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+
+      <ul class="nav-menu" id="nav-menu" role="list">
+        <li class="nav-dropdown">
+          <button class="nav-dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+            Technologies <span class="nav-dropdown-caret" aria-hidden="true"></span>
+          </button>
+          <ul class="nav-dropdown-menu" role="list">
+            <li><a href="xenium.html">Xenium iST</a></li>
+            <li><a href="crispr.html">Pooled CRISPR Technologies</a></li>
+            <li><a href="chemgenomics.html">Chemical Genomics Screens</a></li>
+            <li><a href="phenotypic.html">Arrayed Phenotypic Screens</a></li>
+          </ul>
+        </li>
+        <li><a href="team.html">Team</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ─── Main ─────────────────────────────────────────── -->
+  <main class="page-main">
+
+    <a href="crispr.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Pooled CRISPR Technologies
+    </a>
+
+    <h1 class="calc-page-title">in4mer Screen Size Calculator</h1>
+    <p class="calc-page-subtitle">Estimate cell numbers, gDNA requirements, and sequencing depth for your in4mer CRISPR/enAsCas12a pooled screen.</p>
+
+    <div class="calc-card">
+
+      <!-- Presets -->
+      <p class="calc-section-label">Quick Presets</p>
+      <div class="preset-row">
+        <button class="preset-btn is-active" id="presetInzolia" type="button">Inzolia (genome-wide)</button>
+        <button class="preset-btn" id="presetCustomSmall" type="button">Custom (small)</button>
+        <button class="preset-btn" id="presetCustomMed" type="button">Custom (medium)</button>
+        <button class="preset-btn" id="presetManual" type="button">Manual</button>
+      </div>
+
+      <hr class="calc-divider">
+
+      <!-- Library Composition -->
+      <p class="calc-section-label">Library Composition</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="numGenes">Target genes</label>
+          <input type="number" id="numGenes" value="19700" min="1" max="100000" step="1">
+        </div>
+        <div class="form-group">
+          <label for="numParalogCombos">Paralog combinations</label>
+          <input type="number" id="numParalogCombos" value="4900" min="0" max="50000" step="1">
+          <span class="form-hint">Pairs, triples, quads (set 0 for single-gene only)</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="guidesPerGene">Guides per gene / combo</label>
+          <select id="guidesPerGene">
+            <option value="1">1 (single guide)</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4 (in4mer standard)</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="numNTC">Non-targeting controls</label>
+          <input type="number" id="numNTC" value="500" min="0" max="10000" step="10">
+          <span class="form-hint">Recommended: 2-5% of library size</span>
+        </div>
+      </div>
+
+      <hr class="calc-divider">
+
+      <!-- Screen Parameters -->
+      <p class="calc-section-label">Screen Parameters</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="coverage">Coverage per construct</label>
+          <select id="coverage">
+            <option value="200">200x</option>
+            <option value="300">300x</option>
+            <option value="500" selected>500x (recommended minimum)</option>
+            <option value="750">750x</option>
+            <option value="1000">1,000x</option>
+            <option value="1500">1,500x</option>
+            <option value="2000">2,000x</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="numReplicates">Biological replicates</label>
+          <select id="numReplicates">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="numConditions">Conditions / timepoints</label>
+          <select id="numConditions">
+            <option value="1">1 (single arm)</option>
+            <option value="2" selected>2 (e.g., T0 + endpoint)</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="moi">MOI (multiplicity of infection)</label>
+          <select id="moi">
+            <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>
+            <option value="0.3" selected>0.3 (recommended)</option>
+            <option value="0.4">0.4</option>
+            <option value="0.5">0.5</option>
+            <option value="0.7">0.7</option>
+            <option value="1.0">1.0</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="organism">Organism</label>
+          <select id="organism">
+            <option value="human" selected>Human (6.6 pg/cell)</option>
+            <option value="mouse">Mouse (6.4 pg/cell)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="readsPerConstruct">Sequencing reads per construct</label>
+          <select id="readsPerConstruct">
+            <option value="200">200 reads</option>
+            <option value="500" selected>500 reads (recommended)</option>
+            <option value="750">750 reads</option>
+            <option value="1000">1,000 reads</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results" id="results">
+        <p class="results-heading">Screen Requirements</p>
+        <div id="resultLines"></div>
+      </div>
+
+    </div><!-- /calc-card -->
+  </main>
+
+  <!-- ===== FOOTER / CONTACT ===== -->
+  <footer class="site-footer" id="contact">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="images/atgc-logo-white.svg" alt="ATG-C" width="120" height="34" class="footer-logo">
+        <p class="footer-tagline">Advanced Technologies for Genomics CoLab</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:genome@columbia.edu">genome@columbia.edu</a>
+        <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener">iLab</a>
+      </div>
+      <p class="footer-copy">&copy; 2025 ATG-C</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+
+  <!-- ─── Calculator Logic ─────────────────────────────── -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ================================================================
+       DOM REFERENCES
+       ================================================================ */
+
+    var elNumGenes         = document.getElementById('numGenes');
+    var elNumParalogCombos = document.getElementById('numParalogCombos');
+    var elGuidesPerGene    = document.getElementById('guidesPerGene');
+    var elNumNTC           = document.getElementById('numNTC');
+    var elCoverage         = document.getElementById('coverage');
+    var elNumReplicates    = document.getElementById('numReplicates');
+    var elNumConditions    = document.getElementById('numConditions');
+    var elMOI              = document.getElementById('moi');
+    var elOrganism         = document.getElementById('organism');
+    var elReadsPerConstr   = document.getElementById('readsPerConstruct');
+    var elResultLines      = document.getElementById('resultLines');
+
+    // Preset buttons
+    var presetBtns = {
+      inzolia:    document.getElementById('presetInzolia'),
+      customSmall: document.getElementById('presetCustomSmall'),
+      customMed:  document.getElementById('presetCustomMed'),
+      manual:     document.getElementById('presetManual')
+    };
+
+    /* ================================================================
+       PRESETS
+       ================================================================ */
+
+    var presets = {
+      inzolia: {
+        numGenes: 19700,
+        numParalogCombos: 4900,
+        guidesPerGene: '4',
+        numNTC: 500
+      },
+      customSmall: {
+        numGenes: 500,
+        numParalogCombos: 0,
+        guidesPerGene: '4',
+        numNTC: 100
+      },
+      customMed: {
+        numGenes: 5000,
+        numParalogCombos: 500,
+        guidesPerGene: '4',
+        numNTC: 250
+      }
+    };
+
+    var currentPreset = 'inzolia';
+
+    function setPreset(name) {
+      if (name === 'manual') {
+        currentPreset = 'manual';
+        updatePresetButtons();
+        return;
+      }
+      var p = presets[name];
+      if (!p) return;
+      currentPreset = name;
+
+      elNumGenes.value         = p.numGenes;
+      elNumParalogCombos.value = p.numParalogCombos;
+      elGuidesPerGene.value    = p.guidesPerGene;
+      elNumNTC.value           = p.numNTC;
+
+      updatePresetButtons();
+      update();
+    }
+
+    function updatePresetButtons() {
+      Object.keys(presetBtns).forEach(function (key) {
+        presetBtns[key].classList.toggle('is-active', key === currentPreset);
+      });
+    }
+
+    // Detect when user manually edits library composition inputs
+    function onLibraryInputChange() {
+      // Check if current values match any preset
+      var matched = false;
+      Object.keys(presets).forEach(function (key) {
+        var p = presets[key];
+        if (parseInt(elNumGenes.value) === p.numGenes &&
+            parseInt(elNumParalogCombos.value) === p.numParalogCombos &&
+            elGuidesPerGene.value === p.guidesPerGene &&
+            parseInt(elNumNTC.value) === p.numNTC) {
+          currentPreset = key;
+          matched = true;
+        }
+      });
+      if (!matched) {
+        currentPreset = 'manual';
+      }
+      updatePresetButtons();
+      update();
+    }
+
+    /* ================================================================
+       HELPERS
+       ================================================================ */
+
+    /** Format a number with commas */
+    function fmtNum(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /** Format weight in micrograms with appropriate units */
+    function fmtWeight(ug) {
+      if (ug >= 1000) return (ug / 1000).toFixed(1) + ' mg';
+      return ug.toFixed(0) + ' \u00B5g';
+    }
+
+    /** Format read count */
+    function fmtReads(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+      return n.toString();
+    }
+
+    /* ================================================================
+       MAIN CALCULATION
+       ================================================================ */
+
+    function update() {
+      var numGenes         = Math.max(1, parseInt(elNumGenes.value) || 0);
+      var numParalogCombos = Math.max(0, parseInt(elNumParalogCombos.value) || 0);
+      var guidesPerGene    = parseInt(elGuidesPerGene.value);
+      var numNTC           = Math.max(0, parseInt(elNumNTC.value) || 0);
+      var coverage         = parseInt(elCoverage.value);
+      var numReplicates    = parseInt(elNumReplicates.value);
+      var numConditions    = parseInt(elNumConditions.value);
+      var moi              = parseFloat(elMOI.value);
+      var organism         = elOrganism.value;
+      var readsPerConstr   = parseInt(elReadsPerConstr.value);
+
+      // Genome weight per cell
+      var pgPerCell = organism === 'human' ? 6.6 : 6.4;
+
+      // ── Library size ───────────────────────────────────────
+      // For in4mer: each gene/combo gets 1 construct (the 4 guides are on one vector)
+      var numTargetConstructs = numGenes + numParalogCombos;
+      var totalConstructs     = numTargetConstructs + numNTC;
+
+      // ── Cell calculations ──────────────────────────────────
+      // Cells per replicate = library_size * coverage
+      var cellsPerReplicate = totalConstructs * coverage;
+
+      // Cells to transduce per replicate (need more cells to achieve target MOI)
+      var cellsToTransduce = Math.ceil(cellsPerReplicate / moi);
+
+      // Total transduced cells across all replicates (single transduction for all conditions)
+      var totalTransducedCells = cellsToTransduce * numReplicates;
+
+      // Total samples = replicates * conditions
+      var totalSamples = numReplicates * numConditions;
+
+      // gDNA per sample (assumes you collect cellsPerReplicate worth of cells per sample)
+      var gdnaPerSample_ug = (cellsPerReplicate * pgPerCell) / 1e6; // convert pg to ug
+
+      // Total gDNA across all samples
+      var totalGdna_ug = gdnaPerSample_ug * totalSamples;
+
+      // ── Sequencing ─────────────────────────────────────────
+      var readsPerSample = totalConstructs * readsPerConstr;
+      var totalReads     = readsPerSample * totalSamples;
+
+      // ── Render results ─────────────────────────────────────
+      var html = '';
+
+      // Library section
+      html += '<p class="result-group-label">Library</p>';
+
+      html += '<div class="result-line">';
+      html += '  <span class="label">Target constructs (genes + combos)</span>';
+      html += '  <span class="value">' + fmtNum(numTargetConstructs) + '</span>';
+      html += '</div>';
+
+      html += '<div class="result-line">';
+      html += '  <span class="label">Non-targeting controls</span>';
+      html += '  <span class="value">' + fmtNum(numNTC) + '</span>';
+      html += '</div>';
+
+      html += '<div class="result-highlight">';
+      html += '  <span>Total library size</span>';
+      html += '  <span>' + fmtNum(totalConstructs) + ' constructs</span>';
+      html += '</div>';
+
+      // Cell requirements section
+      html += '<hr class="result-divider">';
+      html += '<p class="result-group-label">Cell Requirements</p>';
+
+      html += '<div class="result-line">';
+      html += '  <span class="label">Cells per replicate arm</span>';
+      html += '  <span class="value">' + fmtNum(cellsPerReplicate) + '</span>';
+      html += '</div>';
+
+      html += '<div class="result-line indent">';
+      html += '  <span class="label">' + fmtNum(totalConstructs) + ' constructs &times; ' + fmtNum(coverage) + ' coverage</span>';
+      html += '  <span class="value"></span>';
+      html += '</div>';
+
+      html += '<div class="result-line">';
+      html += '  <span class="label">Cells to transduce per replicate</span>';
+      html += '  <span class="value">' + fmtNum(cellsToTransduce) + '</span>';
+      html += '</div>';
+
+      html += '<div class="result-line indent">';
+      html += '  <span class="label">' + fmtNum(cellsPerReplicate) + ' cells &divide; ' + moi + ' MOI</span>';
+      html += '  <span class="value"></span>';
+      html += '</div>';
+
+      html += '<div class="result-highlight">';
+      html += '  <span>Total cells to transduce</span>';
+      html += '  <span>' + fmtNum(totalTransducedCells) + '</span>';
+      html += '</div>';
+
+      html += '<div class="result-line indent">';
+      html += '  <span class="label">' + fmtNum(cellsToTransduce) + ' &times; ' + numReplicates + ' replicate' + (numReplicates > 1 ? 's' : '') + '</span>';
+      html += '  <span class="value"></span>';
+      html += '</div>';
+
+      // gDNA section
+      html += '<hr class="result-divider">';
+      html += '<p class="result-group-label">gDNA Requirements</p>';
+
+      html += '<div class="result-line">';
+      html += '  <span class="label">gDNA per sample</span>';
+      html += '  <span class="value">' + fmtWeight(gdnaPerSample_ug) + '</span>';
+      html += '</div>';
+
+      html += '<div class="result-line indent">';
+      html += '  <span class="label">' + fmtNum(cellsPerReplicate) + ' cells &times; ' + pgPerCell + ' pg/cell</span>';
+      html += '  <span class="value"></span>';
+      html += '</div>';
+
+      html += '<div class="result-line">';
+      html += '  <span class="label">Total samples</span>';
+      html += '  <span class="value">' + totalSamples + ' (' + numReplicates + ' rep &times; ' + numConditions + ' cond)</span>';
+      html += '</div>';
+
+      html += '<div class="result-highlight">';
+      html += '  <span>Total gDNA needed</span>';
+      html += '  <span>' + fmtWeight(totalGdna_ug) + '</span>';
+      html += '</div>';
+
+      // Sequencing section
+      html += '<hr class="result-divider">';
+      html += '<p class="result-group-label">Sequencing</p>';
+
+      html += '<div class="result-line">';
+      html += '  <span class="label">Reads per sample</span>';
+      html += '  <span class="value">' + fmtReads(readsPerSample) + '</span>';
+      html += '</div>';
+
+      html += '<div class="result-line indent">';
+      html += '  <span class="label">' + fmtNum(totalConstructs) + ' constructs &times; ' + fmtNum(readsPerConstr) + ' reads each</span>';
+      html += '  <span class="value"></span>';
+      html += '</div>';
+
+      html += '<div class="result-highlight">';
+      html += '  <span>Total sequencing reads</span>';
+      html += '  <span>' + fmtReads(totalReads) + '</span>';
+      html += '</div>';
+
+      // Practical notes
+      if (totalTransducedCells > 500e6) {
+        html += '<div class="result-note">';
+        html += 'This experiment requires &gt;500M transduced cells. Consider using fewer replicates, lower coverage, or a focused sub-library to reduce scale.';
+        html += '</div>';
+      }
+
+      if (gdnaPerSample_ug > 200) {
+        html += '<div class="result-note">';
+        html += 'gDNA per sample exceeds 200 &mu;g. You may need to split the library prep across multiple PCR reactions. Consult the ATG-C team for large-scale library prep protocols.';
+        html += '</div>';
+      }
+
+      html += '<div class="result-info">';
+      html += 'For in4mer screens, maintain &ge;10 cell doublings post-transduction. Collect dry pellets and store at &minus;80&deg;C. Submit gDNA to ATG-C for library prep and sequencing.';
+      html += '</div>';
+
+      // Assumptions
+      html += '<details class="assumptions-toggle">';
+      html += '  <summary>Calculation assumptions</summary>';
+      html += '  <ul class="assumptions-list">';
+      html += '    <li>Each construct = one lentiviral vector carrying ' + guidesPerGene + ' guide(s) targeting one gene or combination</li>';
+      html += '    <li>Diploid genome mass: ' + pgPerCell + ' pg/cell (' + organism + ')</li>';
+      html += '    <li>MOI ' + moi + ' means ~' + (moi * 100).toFixed(0) + '% of cells receive one integrant; lower MOI reduces doublets</li>';
+      html += '    <li>Cell counts assume maintenance of full representation at each condition/timepoint</li>';
+      html += '    <li>gDNA calculation assumes all ' + fmtNum(cellsPerReplicate) + ' cells per arm are collected per sample</li>';
+      html += '    <li>Sequencing depth is for sgRNA/construct counting only (not Perturb-seq)</li>';
+      html += '  </ul>';
+      html += '</details>';
+
+      elResultLines.innerHTML = html;
+    }
+
+    /* ================================================================
+       EVENT LISTENERS
+       ================================================================ */
+
+    // Preset buttons
+    presetBtns.inzolia.addEventListener('click', function () { setPreset('inzolia'); });
+    presetBtns.customSmall.addEventListener('click', function () { setPreset('customSmall'); });
+    presetBtns.customMed.addEventListener('click', function () { setPreset('customMed'); });
+    presetBtns.manual.addEventListener('click', function () { setPreset('manual'); });
+
+    // Library composition inputs (detect manual edits)
+    elNumGenes.addEventListener('input', onLibraryInputChange);
+    elNumParalogCombos.addEventListener('input', onLibraryInputChange);
+    elGuidesPerGene.addEventListener('change', onLibraryInputChange);
+    elNumNTC.addEventListener('input', onLibraryInputChange);
+
+    // Screen parameter inputs (just recalculate)
+    elCoverage.addEventListener('change', update);
+    elNumReplicates.addEventListener('change', update);
+    elNumConditions.addEventListener('change', update);
+    elMOI.addEventListener('change', update);
+    elOrganism.addEventListener('change', update);
+    elReadsPerConstr.addEventListener('change', update);
+
+    // Initial render
+    update();
+
+  })();
+  </script>
+
+</body>
+</html>

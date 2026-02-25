@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xenium iST &mdash; ATG-C</title>
+  <meta name="description" content="Imaging-based spatial transcriptomics with subcellular resolution using the 10X Genomics Xenium platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== STICKY NAV ===== -->
+  <header class="site-header" id="site-header">
+    <nav class="nav-container" aria-label="Main navigation">
+      <a href="index.html" class="nav-logo" aria-label="ATG-C home">
+        <img src="images/atgc-logo.svg" alt="ATG-C" width="140" height="40">
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+
+      <ul class="nav-menu" id="nav-menu" role="list">
+        <li class="nav-dropdown">
+          <button class="nav-dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+            Technologies <span class="nav-dropdown-caret" aria-hidden="true"></span>
+          </button>
+          <ul class="nav-dropdown-menu" role="list">
+            <li><a href="xenium.html">Xenium iST</a></li>
+            <li><a href="crispr.html">Pooled CRISPR Technologies</a></li>
+            <li><a href="chemgenomics.html">Chemical Genomics Screens</a></li>
+            <li><a href="phenotypic.html">Arrayed Phenotypic Screens</a></li>
+          </ul>
+        </li>
+        <li><a href="team.html">Team</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-content">
+
+      <h1 class="page-title">Xenium iST</h1>
+      <p class="page-intro">Imaging-based spatial transcriptomics (iST) using the 10X Genomics Xenium. Profiles RNA and multiplexed protein in cells and tissues with subcellular resolution.</p>
+
+      <!-- CTAs -->
+      <div class="page-cta-row">
+        <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener" class="subpage-cta">Request a Xenium Project</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSf7bpxHlmU2nHwtNUuc4npH5leKFNDXR995MbVUxUhMINbB3w/viewform" target="_blank" rel="noopener" class="subpage-cta subpage-cta--outline">Project Information Form</a>
+        <a href="calculator.html" class="subpage-cta subpage-cta--outline">Estimate Project Cost &rarr;</a>
+      </div>
+
+      <!-- Reagent Warning -->
+      <div class="callout callout--warning">
+        <p><strong>Do not order Xenium reagents.</strong> ATG-C purchases all Xenium reagents through a blanket purchase order. We do not run externally purchased reagents.</p>
+      </div>
+
+      <!-- On-page jump links -->
+      <nav class="page-jump-links" aria-label="Page sections">
+        <a href="#workflow">Workflow</a>
+        <a href="#resources">Protocols &amp; Resources</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <!-- Workflow -->
+      <div class="content-section" id="workflow">
+        <h2>Workflow</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-number" aria-hidden="true">1</span>
+            <div class="step-body">
+              <h3 class="step-title">Request a project</h3>
+              <p class="step-desc">We're happy to discuss your project with you. Start your Xenium iST project by requesting a service through <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener">iLab</a> or emailing <a href="mailto:genome@columbia.edu">genome@columbia.edu</a> (mention Xenium project in your subject line).</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">2</span>
+            <div class="step-body">
+              <h3 class="step-title">Complete the project information form</h3>
+              <p class="step-desc">Fill out this <a href="https://docs.google.com/forms/d/e/1FAIpQLSf7bpxHlmU2nHwtNUuc4npH5leKFNDXR995MbVUxUhMINbB3w/viewform" target="_blank" rel="noopener">Google Form</a>. You will need your <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener">iLab</a> Service ID (format example: GECF(SB)-AB-12), tissue type, panel selection, and number of slides.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">3</span>
+            <div class="step-body">
+              <h3 class="step-title">Pick up Xenium slides</h3>
+              <p class="step-desc">Schedule a time by emailing <a href="mailto:genome@columbia.edu">genome@columbia.edu</a>. Bring a container with dry ice for transport.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">4</span>
+            <div class="step-body">
+              <h3 class="step-title">Prepare your slides</h3>
+              <p class="step-desc">Carefully follow the 10X Genomics Tissue Preparation Guide for <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-ffpe/xenium-in-situ-spatial-profiling-for-ffpe-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">FFPE</a> or <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-fresh-frozen/xenium-in-situ-spatial-profiling-for-fresh-frozen-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">fresh frozen</a> samples. It is essential that your samples are properly fixed (or frozen), sectioned, and placed on the slide.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">5</span>
+            <div class="step-body">
+              <h3 class="step-title">Return slides to ATG-C</h3>
+              <p class="step-desc">Observe the drop-off times: FF by 4:00&nbsp;PM, FFPE by 12:00&nbsp;PM (ATG-C incubates) or 4:00&nbsp;PM (user incubates).</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">6</span>
+            <div class="step-body">
+              <h3 class="step-title">Download your data</h3>
+              <p class="step-desc">We will contact you when the data is ready to transfer. Data must be downloaded within 30 days. Analyze with <a href="https://www.10xgenomics.com/support/software/xenium-explorer" target="_blank" rel="noopener">Xenium Explorer</a>, <a href="https://www.10xgenomics.com/support/software/xenium-ranger" target="_blank" rel="noopener">Xenium Ranger</a>, or <a href="https://squidpy.readthedocs.io/en/stable/" target="_blank" rel="noopener">Squidpy</a>. Columbia analysis support available on request.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Slide diagram -->
+      <div class="content-section">
+        <figure class="content-figure">
+          <img src="images/xenium-slide-diagram.png" alt="Xenium slide layout showing imaging area dimensions and fiducial crosshair markers at corners">
+          <figcaption>Xenium slide layout: 10&nbsp;mm &times; 22&nbsp;mm imaging area with fiducial crosshair markers at corners.</figcaption>
+        </figure>
+      </div>
+
+      <!-- Tissue image -->
+      <div class="content-section">
+        <figure class="content-figure">
+          <img src="images/xenium-tissue-image.png" alt="Xenium spatial transcriptomics fluorescence microscopy image showing subcellular RNA detection">
+          <figcaption>Example Xenium output: fluorescence microscopy image showing subcellular RNA detection.</figcaption>
+        </figure>
+      </div>
+
+      <!-- Protocols & Resources -->
+      <div class="content-section" id="resources">
+        <h2>Protocols &amp; Resources</h2>
+        <ul>
+          <li><a href="https://www.10xgenomics.com/platforms/xenium" target="_blank" rel="noopener">10X Genomics Xenium Platform</a></li>
+          <li><a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-ffpe/xenium-in-situ-spatial-profiling-for-ffpe-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">FFPE Tissue Preparation Protocol</a></li>
+          <li><a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-fresh-frozen/xenium-in-situ-spatial-profiling-for-fresh-frozen-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">Fresh Frozen Tissue Preparation Protocol</a></li>
+          <li><a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/panel-design/xenium-custom-gene-panel-ordering" target="_blank" rel="noopener">Custom Gene Panel Ordering</a></li>
+          <li><a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/software-analysis" target="_blank" rel="noopener">Analysis Software Overview</a></li>
+          <li><a href="https://www.10xgenomics.com/support/software/xenium-explorer" target="_blank" rel="noopener">Xenium Explorer</a></li>
+          <li><a href="https://www.10xgenomics.com/support/software/xenium-ranger" target="_blank" rel="noopener">Xenium Ranger</a></li>
+          <li><a href="https://squidpy.readthedocs.io/en/stable/" target="_blank" rel="noopener">Squidpy</a></li>
+          <li><a href="https://www.10xgenomics.com/analysis-guides/continuing-your-journey-after-xenium-analyzer" target="_blank" rel="noopener">Continuing Your Journey After Xenium Analyzer</a></li>
+        </ul>
+
+        <h3>Analysis Support</h3>
+        <p>The Columbia Genome Center's Single-Cell Analysis Team can help with downstream analysis of Xenium data. Contact <a href="mailto:genome@columbia.edu">genome@columbia.edu</a> and ask about analysis help on a Xenium project.</p>
+      </div>
+
+      <!-- FAQ -->
+      <div class="content-section" id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+
+          <details class="faq-item">
+            <summary class="faq-question">What causes run failures or low-quality data?</summary>
+            <div class="faq-answer">
+              <p>The most common cause is low-quality tissue sections. Closely follow the 10X Genomics tissue preparation protocols for <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-ffpe/xenium-in-situ-spatial-profiling-for-ffpe-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">FFPE</a> and <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-fresh-frozen/xenium-in-situ-spatial-profiling-for-fresh-frozen-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">fresh frozen</a> samples. Fixation problems and poor sample quality are the primary risk factors. See also the 10X KB articles on <a href="https://kb.10xgenomics.com/hc/en-us/articles/20341795998349-Do-you-have-recommendations-for-FFPE-tissue-fixation-for-Xenium-" target="_blank" rel="noopener">FFPE fixation recommendations</a>, <a href="https://kb.10xgenomics.com/hc/en-us/articles/13181003430285-How-can-I-avoid-mRNA-degradation-during-sample-preparation-and-slide-processing-for-Xenium-In-Situ" target="_blank" rel="noopener">mRNA degradation prevention</a>, and <a href="https://kb.10xgenomics.com/hc/en-us/articles/12518792817293-How-do-I-determine-if-my-tissue-block-will-be-compatible-with-Xenium" target="_blank" rel="noopener">tissue block compatibility</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How should I assess sample quality before submission?</summary>
+            <div class="faq-answer">
+              <p>We recommend H&amp;E staining, DAPI staining, and DV200 assessment for all samples. 10X Genomics recommends DV200&nbsp;&ge;30% as a minimum threshold, though there is not a strong correlation between RIN or DV200 and run quality. See the 10X KB articles on <a href="https://kb.10xgenomics.com/hc/en-us/articles/12518792817293-How-do-I-determine-if-my-tissue-block-will-be-compatible-with-Xenium" target="_blank" rel="noopener">tissue block compatibility</a>, <a href="https://kb.10xgenomics.com/hc/en-us/articles/12518385848973-Is-RNA-quality-assessment-either-by-RIN-or-DV200-important-for-Xenium-" target="_blank" rel="noopener">RNA quality assessment importance</a>, and the <a href="https://kb.10xgenomics.com/hc/en-us/sections/12485159296141-Tissue-and-Sample-Preparation" target="_blank" rel="noopener">Tissue &amp; Sample Preparation</a> section.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How many genes are in the pre-made panels?</summary>
+            <div class="faq-answer">
+              <p>Human tissue panels range from 266&ndash;377 genes. Mouse tissue panels range from 247&ndash;379 genes. See the <a href="https://www.10xgenomics.com/products/xenium-panels" target="_blank" rel="noopener">Xenium panels product page</a> for the full catalog. Cell-type annotations are available on the manufacturer's website.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Can I design a custom gene panel?</summary>
+            <div class="faq-answer">
+              <p>Yes. 10X Genomics will work with you to choose the genes you want through their <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/panel-design/xenium-custom-gene-panel-ordering" target="_blank" rel="noopener">panel designer portal</a>. See also the <a href="https://www.10xgenomics.com/support/software/xenium-panel-designer/latest#design-inputs" target="_blank" rel="noopener">panel designer inputs page</a>. Most designs are automated. Some require advanced design for additional fees.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Can leftover custom panel reagent be stored?</summary>
+            <div class="faq-answer">
+              <p>Yes. Leftover custom panel can be stored frozen and should be used within one year following resuspension. See the 10X KB article on <a href="https://kb.10xgenomics.com/hc/en-us/articles/20956475685005-What-are-the-shipping-and-storage-temperatures-of-Xenium-Probes" target="_blank" rel="noopener">probe shipping and storage temperatures</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Are there genes that cannot be included in panels?</summary>
+            <div class="faq-answer">
+              <p>Highly expressed RNAs, mitochondrial genes, ribosomal genes, and HLA class&nbsp;1 genes are discouraged due to optical crowding constraints. Genes with high sequence homology may also be difficult to include. See the <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/panel-design/xenium-panel-getting-started#design-inputs" target="_blank" rel="noopener">panel design getting-started guide</a> for details.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">What section thickness is required?</summary>
+            <div class="faq-answer">
+              <p>10&nbsp;&mu;m for fresh frozen and 5&nbsp;&mu;m for FFPE. For guidance on working with larger tissue sections, see the 10X KB articles on <a href="https://kb.10xgenomics.com/hc/en-us/articles/12812476836493-How-do-I-study-large-tissue-sections-using-Xenium" target="_blank" rel="noopener">large tissue sections</a> and <a href="https://kb.10xgenomics.com/hc/en-us/articles/18142712612493-What-should-I-do-if-I-cover-fiducials-on-the-Xenium-slide" target="_blank" rel="noopener">fiducials coverage</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Should I use fresh frozen or FFPE?</summary>
+            <div class="faq-answer">
+              <p>Good results can be obtained with either. Fresh frozen samples tend to have more transcripts per cell; FFPE has better morphology and segmentation.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Who places tissue sections on the slides?</summary>
+            <div class="faq-answer">
+              <p>Users place sections themselves or can work with the CUIMC molecular pathology core for sectioning services. Refer to the 10X Genomics tissue preparation protocols for <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-ffpe/xenium-in-situ-spatial-profiling-for-ffpe-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">FFPE</a> and <a href="https://www.10xgenomics.com/support/in-situ-gene-expression/documentation/steps/tissue-prep-fresh-frozen/xenium-in-situ-spatial-profiling-for-fresh-frozen-%E2%80%93-tissue-preparation-guide" target="_blank" rel="noopener">fresh frozen</a> samples.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Does ATG-C handle fixation and deparaffinization?</summary>
+            <div class="faq-answer">
+              <p>Yes. ATG-C will fix your frozen samples or deparaffinize your FFPE sample slides.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How many tissue sections can fit on one slide?</summary>
+            <div class="faq-answer">
+              <p>The imaging area is 10&nbsp;mm &times; 22&nbsp;mm per slide. The Xenium recognizes up to 8 regions of interest (ROIs) per slide. Fiducial crosshair markers at the corners must not be covered by tissue. More than 8 samples can be included on one slide with manual demultiplexing post-run (notify ATG-C beforehand). See the 10X KB article on <a href="https://kb.10xgenomics.com/hc/en-us/articles/18142712612493-What-should-I-do-if-I-cover-fiducials-on-the-Xenium-slide" target="_blank" rel="noopener">fiducials coverage</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How should FFPE slides be transported after sectioning?</summary>
+            <div class="faq-answer">
+              <p>Transport FFPE slides at room temperature immediately after the drying step in a sealed slide mailer or resealable bag.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">What should I do with FFPE slides after placing tissue?</summary>
+            <div class="faq-answer">
+              <p>Follow protocol: dry upright at room temperature (~10 min with fan, 30 min without), then incubate 3 hours at 42&nbsp;&deg;C. ATG-C can perform the incubation if slides are delivered by 12:00&nbsp;PM. See the 10X KB article on <a href="https://kb.10xgenomics.com/hc/en-us/articles/11773395667853-How-should-I-store-Xenium-slides-once-FFPE-tissue-sections-have-been-placed" target="_blank" rel="noopener">FFPE slide storage</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How should fresh frozen slides be stored before submission?</summary>
+            <div class="faq-answer">
+              <p>Refer to the 10X KB article on <a href="https://kb.10xgenomics.com/hc/en-us/articles/13180606346381-How-should-I-store-Xenium-slides-once-fresh-frozen-tissue-sections-have-been-placed" target="_blank" rel="noopener">fresh frozen slide storage</a> for storage recommendations.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">What are the drop-off times?</summary>
+            <div class="faq-answer">
+              <p>Fresh frozen samples: by 4:00&nbsp;PM. FFPE (ATG-C incubates): by 12:00&nbsp;PM. FFPE (user incubates at 42&nbsp;&deg;C for 3 hours): by 4:00&nbsp;PM.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Can I get my slides back after the run?</summary>
+            <div class="faq-answer">
+              <p>Yes. The <a href="https://www.10xgenomics.com/platforms/xenium" target="_blank" rel="noopener">Xenium Analyzer</a> uses non-destructive analysis and gentle chemistry. Slides can be stained for H&amp;E or immunofluorescence afterward. Notify ATG-C that you want your slides returned and pick them up within 1 business day of run completion.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How large is the output data?</summary>
+            <div class="faq-answer">
+              <p>Output data is approximately 50&ndash;100&nbsp;GB per run. ATG-C will provide a download link. Data must be downloaded within 30 days.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">What format is the output data?</summary>
+            <div class="faq-answer">
+              <p>See the <a href="https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/analysis/xoa-output-overview" target="_blank" rel="noopener">10X Genomics documentation on Xenium output files</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">What are the optics specifications?</summary>
+            <div class="faq-answer">
+              <p>The Xenium Analyzer uses a high-NA optics, fast area-scan camera system. Pixel size: 0.2125&nbsp;&mu;m/pixel. Transcript XY-localization precision&nbsp;&lt;30&nbsp;nm. Z-localization precision&nbsp;&lt;100&nbsp;nm. See the 10X KB article on <a href="https://kb.10xgenomics.com/hc/en-us/articles/13143226910477-How-does-the-optics-system-work-on-the-Xenium-Analyzer-" target="_blank" rel="noopener">Xenium Analyzer optics</a> and the <a href="https://www.10xgenomics.com/instruments/xenium-analyzer" target="_blank" rel="noopener">instrument page</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Is there a specific way to align tissue sections on the slide?</summary>
+            <div class="faq-answer">
+              <p>As long as sections are within the fiducial marks, there is no required or recommended alignment. Place tissue wherever it fits within the imaging area. Uniform alignment may facilitate sample comparison.</p>
+            </div>
+          </details>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER / CONTACT ===== -->
+  <footer class="site-footer" id="contact">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="images/atgc-logo-white.svg" alt="ATG-C" width="120" height="34" class="footer-logo">
+        <p class="footer-tagline">Advanced Technologies for Genomics CoLab</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:genome@columbia.edu">genome@columbia.edu</a>
+        <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener">iLab</a>
+      </div>
+      <p class="footer-copy">&copy; 2025 ATG-C</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

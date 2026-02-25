@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 110" width="280" height="110">
+  <!-- Variation 2: Minimal Arrow — Single color: Dark Grey -->
+
+  <!-- Partial left bracket (ORF start hint) -->
+  <line x1="20" y1="80" x2="20" y2="38" stroke="#374151" stroke-width="2" stroke-linecap="round"/>
+  <line x1="20" y1="80" x2="36" y2="80" stroke="#374151" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Directional arrow -->
+  <line x1="20" y1="38" x2="248" y2="38" stroke="#374151" stroke-width="2.5" stroke-linecap="round"/>
+  <polyline points="240,27 256,38 240,49" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Text: ATG-C -->
+  <text x="38" y="76" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="46" letter-spacing="-1">
+    <tspan font-weight="700" fill="#374151">ATG</tspan><tspan font-weight="400" fill="#374151">-</tspan><tspan font-weight="700" fill="#374151">C</tspan>
+  </text>
+</svg>

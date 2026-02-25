@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pooled CRISPR Technologies — ATG-C</title>
+  <meta name="description" content="Genome-wide CRISPR knockout, CRISPRi/off, base editing, and Perturb-seq screens — from library design to sequencing.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== STICKY NAV ===== -->
+  <header class="site-header" id="site-header">
+    <nav class="nav-container" aria-label="Main navigation">
+      <a href="index.html" class="nav-logo" aria-label="ATG-C home">
+        <img src="images/atgc-logo.svg" alt="ATG-C" width="140" height="40">
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+
+      <ul class="nav-menu" id="nav-menu" role="list">
+        <li class="nav-dropdown">
+          <button class="nav-dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+            Technologies <span class="nav-dropdown-caret" aria-hidden="true"></span>
+          </button>
+          <ul class="nav-dropdown-menu" role="list">
+            <li><a href="xenium.html">Xenium iST</a></li>
+            <li><a href="crispr.html">Pooled CRISPR Technologies</a></li>
+            <li><a href="chemgenomics.html">Chemical Genomics Screens</a></li>
+            <li><a href="phenotypic.html">Arrayed Phenotypic Screens</a></li>
+          </ul>
+        </li>
+        <li><a href="team.html">Team</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-content">
+
+      <h1 class="page-title">Pooled CRISPR Technologies</h1>
+      <p class="page-intro">We help collaborators in experimental design and execution, choosing the best model system, perturbation type, challenge, and readout. Our tools include CRISPR knockout, interference, base editing, CRISPRoff, and ORF overexpression.</p>
+
+      <figure class="content-figure content-figure--compact">
+        <img src="images/crispr-screen-workflow.png" alt="Circular workflow diagram showing the stages of a pooled CRISPR screen from library design to analysis">
+        <figcaption>Pooled CRISPR screen workflow: from experimental design through library generation, transduction, selection, and sequencing.</figcaption>
+      </figure>
+
+      <!-- Table of contents -->
+      <nav class="page-jump-links" aria-label="Page sections">
+        <a href="#design">Experimental Design</a>
+        <a href="#crispr-ko">CRISPR Knockout</a>
+        <a href="#crispri">CRISPRi / CRISPRoff / CRISPRa</a>
+        <a href="#perturb-seq">Perturb-seq</a>
+        <a href="#get-started">How to Start</a>
+        <a href="#references">References</a>
+      </nav>
+
+      <!-- Experimental Design -->
+      <div class="content-section" id="design">
+        <h2>Experimental Design</h2>
+        <p>Every pooled screen is defined by four dimensions. We work with you to choose the right combination for your biological question.</p>
+
+        <div class="dimension-grid">
+          <div class="dimension-card">
+            <h4>The Model</h4>
+            <p>Cell lines, primary cells, organoids, or in vivo models.</p>
+          </div>
+          <div class="dimension-card">
+            <h4>The Perturbation</h4>
+            <p>CRISPR KO, CRISPRi, CRISPRa, CRISPRoff, base editing, or ORF overexpression.</p>
+          </div>
+          <div class="dimension-card">
+            <h4>The Challenge</h4>
+            <p>Proliferation, drug resistance, pathogen exposure, differentiation, or other selective pressures.</p>
+          </div>
+          <div class="dimension-card">
+            <h4>The Readout</h4>
+            <p>sgRNA or amplicon sequencing, scRNA-seq (Perturb-seq), multi-omics, FACS, or imaging.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collapsible Technology Sections -->
+      <div class="faq-list">
+
+        <!-- CRISPR Knockout Screens -->
+        <details class="faq-item" id="crispr-ko">
+          <summary class="faq-question">CRISPR Knockout Screens</summary>
+          <div class="faq-answer">
+
+            <h3>The in4mer Platform</h3>
+            <p>The in4mer CRISPR/enAsCas12a multiplex knockout platform uses arrays of four independent guide RNAs targeting the same or different genes, delivered via an all-in-one lentiviral vector. The enAsCas12a nuclease (<a href="https://doi.org/10.1038/s41587-018-0011-0" target="_blank" rel="noopener">Kleinstiver et al., 2019</a>) offers several advantages over Cas9: it uses shorter guide RNAs (~40 nt vs ~100 nt), has a different PAM requirement (TTTV) that expands targeting space, and enables efficient multiplex knockout from a single transcript. The in4mer system was developed by the Hart and Doench labs and published in <a href="https://www.nature.com/articles/s41467-024-47795-3" target="_blank" rel="noopener">Anvar et al. (2024)</a>.</p>
+
+            <figure class="content-figure">
+              <img src="images/inzolia-vector-construct.png" alt="in4mer all-in-one lentiviral vector construct with four guide RNA positions">
+              <figcaption>in4mer all-in-one lentiviral vector construct encoding enAsCas12a and four guide RNA positions.</figcaption>
+            </figure>
+
+            <h3>The Inzolia Library</h3>
+            <p>The genome-scale Inzolia library targets ~19,700 single genes and covers &gt;4,900 paralog combinations (pairs, triples, and quads). It is 30% smaller than typical CRISPR/Cas9 libraries while maintaining high sensitivity in identifying core and context-dependent essential genes, effectively detecting synthetic lethal and buffering genetic interactions between paralogs (<a href="https://www.nature.com/articles/s41467-024-47795-3" target="_blank" rel="noopener">Anvar et al., 2024</a>).</p>
+
+            <figure class="content-figure">
+              <img src="images/inzolia-library-design.png" alt="Inzolia library composition showing single-gene and paralog combination construct counts">
+              <figcaption>Inzolia library composition: ~19,700 single-gene targets and &gt;4,900 paralog combinations.</figcaption>
+            </figure>
+
+            <h3>What ATG-C Provides</h3>
+            <ul>
+              <li>Build or purchase pDNA libraries</li>
+              <li>Amplify and validate libraries (Sanger, long-read and short-read NGS)</li>
+              <li>Generate lentiviral libraries, including concentrating liter-size lentiviral preps for all-in-one vectors</li>
+              <li>Conduct functional batch testing in cancer cell lines</li>
+              <li>Perform library prep, QC, and sequencing of submitted samples</li>
+            </ul>
+
+            <h3>Your Responsibilities</h3>
+            <ul>
+              <li>Cell line optimization (lentiviral titering, puromycin kill curves, polybrene testing)</li>
+              <li>Transduction of viral library</li>
+              <li>Maintain &ge;10 cell divisions post-transduction</li>
+              <li>Collect dry cell pellets and store at &minus;80&deg;C</li>
+              <li>Perform lysis and gDNA isolation</li>
+              <li>Submit gDNA and plate map to ATG-C</li>
+            </ul>
+
+            <h3>Proliferation Screen Example</h3>
+            <p>For a genome-wide proliferation screen using the Inzolia library (~19,700 genes + 4,900 paralog combos), typical parameters include:</p>
+            <ul>
+              <li><strong>Library size:</strong> ~25,000 constructs</li>
+              <li><strong>Coverage:</strong> 500&ndash;1,000&times; per construct</li>
+              <li><strong>Cells needed:</strong> 12.5&ndash;25 million transduced cells per replicate</li>
+              <li><strong>gDNA requirement:</strong> ~200 &mu;g per sample (at 6.6 pg/cell)</li>
+            </ul>
+
+            <p>Use our <a href="in4mer-calculator.html"><strong>in4mer screen size calculator</strong></a> to estimate cell numbers, gDNA requirements, and sequencing depth for your experiment.</p>
+
+          </div>
+        </details>
+
+        <!-- CRISPRi / CRISPRoff / CRISPRa -->
+        <details class="faq-item" id="crispri">
+          <summary class="faq-question">CRISPRi / CRISPRoff / CRISPRa</summary>
+          <div class="faq-answer">
+
+            <h3>CRISPRi (CRISPR Interference)</h3>
+            <p>A catalytically dead Cas protein (dCas9) fused to repressor domains is targeted to a promoter or enhancer, creating a steric block that transiently inhibits transcription. We use functionally validated genome-wide CRISPRi libraries with dual-guide constructs and enhanced CRISPR repressors to minimize off-target silencing and toxicity (<a href="https://doi.org/10.1038/s41587-020-00745-6" target="_blank" rel="noopener">DeWeirdt et al., 2021</a>).</p>
+
+            <figure class="content-figure content-figure--compact">
+              <img src="images/crispri-diagram.png" alt="CRISPRi mechanism showing dCas9 fused to repressor domains blocking transcription at a gene promoter">
+              <figcaption>CRISPRi mechanism: dCas9-repressor fusion blocks transcription at the target promoter.</figcaption>
+            </figure>
+
+            <h3>CRISPRoff</h3>
+            <p>dCas9 fused to both repressor and methylase domains targets gene promoters. Genes with CpG islands can be durably repressed&nbsp;&mdash; epigenetic repression that persists in daughter cells. This enables heritable gene silencing without DNA cutting.</p>
+
+            <h3>CRISPRa (CRISPR Activation)</h3>
+            <p>dCas9 fused to activator domains recruits transcriptional machinery to a promoter, enabling gain-of-function screens at genome scale.</p>
+
+            <h3>Base Editing</h3>
+            <p>Nickase Cas (nCas9 or nCas12a) fused to a deaminase causes C&rarr;T, A&rarr;G, or C&rarr;G conversions without double-strand breaks. Used for targeted saturation mutagenesis, allele correction, and functional variant screens.</p>
+
+          </div>
+        </details>
+
+        <!-- Perturb-seq -->
+        <details class="faq-item" id="perturb-seq">
+          <summary class="faq-question">Perturb-seq</summary>
+          <div class="faq-answer">
+            <p>Perturb-seq combines CRISPR-mediated perturbations with single-cell RNA sequencing. Direct-capture technology detects which perturbation(s) occurred in each cell by capturing the sgRNA sequence. These screens are typically short (1&ndash;8 days post-transduction). The approach was pioneered by multiple groups simultaneously (<a href="https://doi.org/10.1016/j.cell.2016.11.038" target="_blank" rel="noopener">Dixit et al., 2016</a>; <a href="https://doi.org/10.1016/j.cell.2016.11.048" target="_blank" rel="noopener">Adamson et al., 2016</a>; <a href="https://doi.org/10.1016/j.cell.2016.11.039" target="_blank" rel="noopener">Jaitin et al., 2016</a>; <a href="https://doi.org/10.1038/nmeth.4177" target="_blank" rel="noopener">Datlinger et al., 2017</a>).</p>
+            <p>We have had excellent results using enhanced dCas9 repressors and dual-sgRNA vectors. The technology allows for up to genome-wide RNA-seq profiling in a single experiment.</p>
+            <p>Additional readout modalities include FACS-based screens for surface marker or reporter expression, and ORF overexpression screens for gain-of-function phenotyping. For a comprehensive review of pooled CRISPR screen design, see <a href="https://doi.org/10.1038/s43586-022-00098-7" target="_blank" rel="noopener">Bock et al. (2022)</a>.</p>
+          </div>
+        </details>
+
+      </div>
+
+      <!-- Workflow -->
+      <div class="content-section" id="get-started">
+        <h2>How to Start a Project</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-number" aria-hidden="true">1</span>
+            <div class="step-body">
+              <h3 class="step-title">Schedule a planning meeting</h3>
+              <p class="step-desc">Optional for collaborators with a ready-to-screen library. Recommended for new projects to discuss model system, perturbation type, and experimental design.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">2</span>
+            <div class="step-body">
+              <h3 class="step-title">Order the experiment on iLab</h3>
+              <p class="step-desc">Submit your request through <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener">iLab</a>.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">3</span>
+            <div class="step-body">
+              <h3 class="step-title">Fill out the project description form</h3>
+              <p class="step-desc">Provide details on cell line, perturbation type, challenge conditions, and readout.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">4</span>
+            <div class="step-body">
+              <h3 class="step-title">Schedule a pickup</h3>
+              <p class="step-desc">Bring a dry ice container for virus transport.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-number" aria-hidden="true">5</span>
+            <div class="step-body">
+              <h3 class="step-title">Return gDNA</h3>
+              <p class="step-desc">After completing the screen, submit your gDNA samples and plate map for library prep and sequencing.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- References -->
+      <div class="content-section" id="references">
+        <h2>References</h2>
+        <ul class="reference-list">
+          <li>Anvar et al. (2024) <em>Nature Communications</em>. <a href="https://www.nature.com/articles/s41467-024-47795-3" target="_blank" rel="noopener">DOI: 10.1038/s41467-024-47795-3</a></li>
+          <li>Bock et al. (2022) <em>Nat Rev Methods Primers</em>. <a href="https://doi.org/10.1038/s43586-022-00098-7" target="_blank" rel="noopener">DOI: 10.1038/s43586-022-00098-7</a></li>
+          <li>Kleinstiver et al. (2019) <em>Nature Biotechnology</em>. <a href="https://doi.org/10.1038/s41587-018-0011-0" target="_blank" rel="noopener">DOI: 10.1038/s41587-018-0011-0</a></li>
+          <li>DeWeirdt et al. (2021) <em>Nat Biotechnol</em>. <a href="https://doi.org/10.1038/s41587-020-00745-6" target="_blank" rel="noopener">DOI: 10.1038/s41587-020-00745-6</a></li>
+          <li>Datlinger et al. (2017) <em>Nat Methods</em>. <a href="https://doi.org/10.1038/nmeth.4177" target="_blank" rel="noopener">DOI: 10.1038/nmeth.4177</a></li>
+          <li>Dixit et al. (2016) <em>Cell</em>. <a href="https://doi.org/10.1016/j.cell.2016.11.038" target="_blank" rel="noopener">DOI: 10.1016/j.cell.2016.11.038</a></li>
+          <li>Adamson et al. (2016) <em>Cell</em>. <a href="https://doi.org/10.1016/j.cell.2016.11.048" target="_blank" rel="noopener">DOI: 10.1016/j.cell.2016.11.048</a></li>
+          <li>Jaitin et al. (2016) <em>Cell</em>. <a href="https://doi.org/10.1016/j.cell.2016.11.039" target="_blank" rel="noopener">DOI: 10.1016/j.cell.2016.11.039</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER / CONTACT ===== -->
+  <footer class="site-footer" id="contact">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="images/atgc-logo-white.svg" alt="ATG-C" width="120" height="34" class="footer-logo">
+        <p class="footer-tagline">Advanced Technologies for Genomics CoLab</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:genome@columbia.edu">genome@columbia.edu</a>
+        <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener">iLab</a>
+      </div>
+      <p class="footer-copy">&copy; 2025 ATG-C</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
