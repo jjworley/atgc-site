@@ -198,4 +198,12 @@
     trigger.classList.add('is-active');
   }
 
+  // Highlight top-level nav links (Tools, Team, etc.)
+  navMenu.querySelectorAll(':scope > li > a').forEach(function (link) {
+    var linkPage = link.getAttribute('href').split('/').pop();
+    if (linkPage === currentPage) {
+      link.classList.add('is-active');
+    }
+  });
+
 })();

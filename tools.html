@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tools — ATG-C</title>
+  <meta name="description" content="Interactive tools for ATG-C collaborators — cell line database lookup and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Cell Line Lookup Tool ── */
+    .tool-card {
+      background: #F8FAFC;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 48px;
+    }
+
+    .tool-card h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .tool-card > p {
+      font-size: 15px;
+      color: #6B7280;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* Disclaimer */
+    .tool-disclaimer {
+      background: #FEF3C7;
+      border-left: 4px solid #F59E0B;
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .tool-disclaimer label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #92400E;
+    }
+
+    .tool-disclaimer input[type="checkbox"] {
+      margin-top: 3px;
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      accent-color: #D97706;
+      cursor: pointer;
+    }
+
+    /* Search area */
+    .tool-search {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tool-search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      border: 1px solid #D1D5DB;
+      border-radius: 6px;
+      background: #FFFFFF;
+      color: #111827;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .tool-search-input:focus {
+      outline: none;
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .tool-search-input:disabled {
+      background: #F3F4F6;
+      color: #9CA3AF;
+      cursor: not-allowed;
+    }
+
+    .tool-search-btn {
+      padding: 10px 24px;
+      font-size: 15px;
+      font-weight: 500;
+      font-family: inherit;
+      color: #FFFFFF;
+      background: #2563EB;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .tool-search-btn:hover:not(:disabled) {
+      background: #1D4ED8;
+    }
+
+    .tool-search-btn:disabled {
+      background: #93C5FD;
+      cursor: not-allowed;
+    }
+
+    .tool-search-hint {
+      font-size: 13px;
+      color: #9CA3AF;
+      margin-bottom: 20px;
+    }
+
+    /* Cancer type filter */
+    .tool-filter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tool-filter-row label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .tool-filter-select {
+      padding: 8px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1px solid #D1D5DB;
+      border-radius: 6px;
+      background: #FFFFFF;
+      color: #111827;
+      cursor: pointer;
+      min-width: 200px;
+    }
+
+    .tool-filter-select:disabled {
+      background: #F3F4F6;
+      color: #9CA3AF;
+      cursor: not-allowed;
+    }
+
+    /* Divider between search and browse */
+    .tool-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tool-divider::before,
+    .tool-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #E5E7EB;
+    }
+
+    /* Results */
+    .tool-results {
+      min-height: 60px;
+      overflow-x: auto;
+    }
+
+    .tool-result-msg {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #374151;
+      padding: 12px 0;
+    }
+
+    .tool-result-msg strong {
+      color: #111827;
+    }
+
+    .tool-result-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .tool-result-badge--yes {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    .tool-result-badge--no {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    .tool-result-badge--maybe {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .tool-result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .tool-result-table th {
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 600;
+      color: #374151;
+      background: #F3F4F6;
+      border-bottom: 2px solid #E5E7EB;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tool-result-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #E5E7EB;
+      color: #374151;
+      vertical-align: top;
+    }
+
+    .tool-result-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tool-result-table tr:hover td {
+      background: #F9FAFB;
+    }
+
+    .tool-result-section {
+      margin-top: 16px;
+    }
+
+    .tool-result-section-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6B7280;
+      margin-bottom: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .tool-card {
+        padding: 24px 20px;
+      }
+
+      .tool-search {
+        flex-direction: column;
+      }
+
+      .tool-search-input {
+        min-width: 0;
+      }
+
+      .tool-result-table {
+        font-size: 13px;
+      }
+
+      .tool-result-table th,
+      .tool-result-table td {
+        padding: 8px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== STICKY NAV ===== -->
+  <header class="site-header" id="site-header">
+    <nav class="nav-container" aria-label="Main navigation">
+      <a href="index.html" class="nav-logo" aria-label="ATG-C home">
+        <img src="images/atgc-logo.svg" alt="ATG-C" width="140" height="40">
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+
+      <ul class="nav-menu" id="nav-menu" role="list">
+        <li class="nav-dropdown">
+          <button class="nav-dropdown-trigger" aria-expanded="false" aria-haspopup="true">
+            Technologies <span class="nav-dropdown-caret" aria-hidden="true"></span>
+          </button>
+          <ul class="nav-dropdown-menu" role="list">
+            <li><a href="xenium.html">Xenium iST</a></li>
+            <li><a href="crispr.html">Pooled CRISPR Technologies</a></li>
+            <li><a href="chemgenomics.html">Chemical Genomics Screens</a></li>
+            <li><a href="phenotypic.html">Arrayed Phenotypic Screens</a></li>
+          </ul>
+        </li>
+        <li><a href="tools.html">Tools</a></li>
+        <li><a href="team.html">Team</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-content">
+
+      <h1 class="page-title">Tools (beta)</h1>
+      <p class="page-intro">Interactive tools for ATG-C collaborators.</p>
+
+      <!-- ═══ Tool 1: Cell Line Database Lookup ═══ -->
+      <div class="tool-card" id="cell-line-lookup">
+        <h2>Cell Line Database Lookup</h2>
+        <p>Search whether ATG-C has a specific cell line available in-house. Our collection spans 900+ lines across 40+ cancer and tissue types, sourced primarily from ATCC, DSMZ, KCLB, RIKEN, and other repositories.</p>
+
+        <div class="tool-disclaimer">
+          <label>
+            <input type="checkbox" id="disclaimer-check">
+            <span>I understand that all cell lines are provided <strong>"as is."</strong> Some lines may require expansion, which will take additional time and incur extra fees. I agree to <strong>test for mycoplasma upon arrival</strong> before use in any experiment.</span>
+          </label>
+        </div>
+
+        <div class="tool-search">
+          <input type="text" id="search-input" class="tool-search-input" placeholder="Enter a cell line name (e.g. MCF7, A549, JURKAT)..." disabled aria-label="Cell line name" maxlength="100">
+          <button id="search-btn" class="tool-search-btn" disabled>Search</button>
+        </div>
+        <p class="tool-search-hint" id="search-hint">Check the box above to enable search.</p>
+
+        <div class="tool-results" id="search-results" aria-live="polite"></div>
+
+        <div class="tool-divider">or browse by cancer type</div>
+
+        <div class="tool-filter-row">
+          <label for="cancer-type-select">Cancer / tissue type:</label>
+          <select id="cancer-type-select" class="tool-filter-select" disabled>
+            <option value="">Select a type...</option>
+          </select>
+        </div>
+
+        <div class="tool-results" id="browse-results" aria-live="polite"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer" id="contact">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="images/atgc-logo-white.svg" alt="ATG-C" width="120" height="34" class="footer-logo">
+        <p class="footer-tagline">Advanced Technologies for Genomics CoLab</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:genome@columbia.edu">genome@columbia.edu</a>
+        <a href="https://cumc.corefacilities.org/sc/5438/genome-engineering-core-facility-systems-biology/?tab=services" target="_blank" rel="noopener">iLab</a>
+      </div>
+      <p class="footer-copy">&copy; 2025 ATG-C</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+  /* ============================================================
+     Cell Line Database Lookup — ATG-C Tools
+     ============================================================ */
+  (function () {
+    'use strict';
+
+    /* ── Data: [name, site_primary, source, cat_no] ── */
+    var RAW = [["NCI/ADR-RES", "adenocarcinoma", "NCI/DCTD", "507388"], ["CHP-212", "autonomic_ganglia", "ATCC", "CRL-2273"], ["SK-N-AS", "autonomic_ganglia", "ATCC", "CRL-2137"], ["IMR-32", "autonomic_ganglia", "ATCC", "CCL-127"], ["SK-N-BE(2)", "autonomic_ganglia", "ATCC", "CRL-2271"], ["SK-N-FI", "autonomic_ganglia", "ATCC", "CRL-2142"], ["KELLY", "autonomic_ganglia", "DSMZ", "ACC 355"], ["KP-N-RT-BM-1", "autonomic_ganglia", "HSRRB", "IFO50432"], ["NB-1", "autonomic_ganglia", "HSRRB", "JCRB0621"], ["NH-6", "autonomic_ganglia", "HSRRB", "JCRB0832"], ["SK-N-SH", "autonomic_ganglia", "ATCC", "HTB-11"], ["CHP-126", "autonomic_ganglia", "DSMZ", "ACC 304"], ["SIMA", "autonomic_ganglia", "DSMZ", "ACC 164"], ["KP-N-SI9s", "autonomic_ganglia", "HSRRB", "IFO50433"], ["KP-N-YN", "autonomic_ganglia", "HSRRB", "IFO50431"], ["MHH-NB-11", "autonomic_ganglia", "DSMZ", "ACC 157"], ["Ly3", "B-Cells", "", ""], ["SNU-245", "biliary_tract", "KCLB", "n/a"], ["SNU-308", "biliary_tract", "KCLB", "n/a"], ["SNU-478", "biliary_tract", "KCLB", "n/a"], ["HuCCT1", "biliary_tract", "HSRRB", "JCRB0425"], ["HuH28", "biliary_tract", "HSRRB", "JCRB0426"], ["A-673", "bone", "ATCC", "CRL-1598"], ["MG-63", "bone", "ATCC", "CRL-1427"], ["Hs 822.T", "bone", "ATCC", "CRL-7556"], ["HOS", "bone", "ATCC", "CRL-1543"], ["CADO-ES1", "bone", "DSMZ", "ACC 255"], ["SJSA-1", "bone", "ATCC", "CRL-2098"], ["SK-N-MC", "bone", "ATCC", "HTB-10"], ["Hs 819.T", "bone", "ATCC", "CRL-7891"], ["T1-73", "bone", "ATCC", "CRL-7943"], ["HS 870.T", "bone", "ATCC", "CRL-7606"], ["HS 821.T", "bone", "ATCC", "CRL-7554"], ["Hs 706.T", "bone", "ATCC", "CRL-7447"], ["RD-ES", "bone", "ATCC", "HTB-166"], ["Hs 888.T", "bone", "ATCC", "CRL-7622"], ["Hs 863.T", "bone", "ATCC", "CRL-7598"], ["G-292 clone A141B1", "bone", "ATCC", "CRL-1423"], ["143B", "bone", "ATCC", "CRL-8303"], ["SW1353", "bone", "ATCC", "HTB-94"], ["SK-ES-1", "bone", "ATCC", "HTB-86"], ["Hs 737.T", "bone", "ATCC", "CRL-7473"], ["CAL-78", "bone", "DSMZ", "ACC 449"], ["MHH-ES-1", "bone", "DSMZ", "ACC 167"], ["TC-71", "bone", "DSMZ", "ACC 516"], ["OUMS-27", "bone", "HSRRB", "IFO50488"], ["Hs 281.T", "breast", "ATCC", "CRL-7227"], ["Hs 343.T", "breast", "ATCC", "CRL-7245"], ["UACC-812", "breast", "ATCC", "CRL-1897"], ["HCC1599", "breast", "ATCC", "CRL-2331"], ["HCC2157", "breast", "ATCC", "CRL-2340"], ["Hs 606.T", "breast", "ATCC", "CRL-7368"], ["HCC1806", "breast", "ATCC", "CRL-2335"], ["HCC1395", "breast", "ATCC", "CRL-2324"], ["HCC1143", "breast", "ATCC", "CRL-2321"], ["HCC202", "breast", "ATCC", "CRL-2316"], ["HCC70", "breast", "ATCC", "CRL-2315"], ["AU-565", "breast", "ATCC", "CRL-2351"], ["SK-BR-3", "breast", "ATCC", "HTB-30"], ["MDA-MB-468", "breast", "ATCC", "HTB-132"], ["BT-474", "breast", "ATCC", "HTB-20"], ["T-47D", "breast", "ATCC", "HTB-133"], ["MDA-MB-231", "breast", "ATCC", "HTB-26"], ["BT-20", "breast", "ATCC", "HTB-19"], ["MDA-MB-361", "breast", "ATCC", "HTB-27"], ["HCC1937", "breast", "ATCC", "CRL-2336"], ["MDA-MB-157", "breast", "ATCC", "HTB-24"], ["Hs 578T", "breast", "ATCC", "HTB-126"], ["ZR-75-30", "breast", "ATCC", "CRL-1504"], ["HCC1187", "breast", "ATCC", "CRL-2322"], ["HCC38", "breast", "ATCC", "CRL-2314"], ["MDA-MB-175-VII", "breast", "ATCC", "HTB-25"], ["MDA-MB-134-VI", "breast", "ATCC", "HTB-23"], ["HCC1500", "breast", "ATCC", "CRL-2329"], ["BT-549", "breast", "ATCC", "HTB-122"], ["HCC1954", "breast", "ATCC", "CRL-2338"], ["MDA-MB-436", "breast", "ATCC", "HTB-130"], ["HCC1419", "breast", "ATCC", "CRL-2326"], ["ZR-75-1", "breast", "ATCC", "CRL-1500"], ["Hs 742.T", "breast", "ATCC", "CRL-7482"], ["DU4475", "breast", "ATCC", "HTB-123"], ["HCC2218", "breast", "ATCC", "CRL-2343"], ["CAL-120", "breast", "DSMZ", "ACC 459"], ["CAL-51", "breast", "DSMZ", "ACC 302"], ["CAL-85-1", "breast", "DSMZ", "ACC 440"], ["EFM-19", "breast", "DSMZ", "ACC 231"], ["EVSA-T", "breast", "DSMZ", "ACC 433"], ["CAL-148", "breast", "DSMZ", "ACC-460"], ["MCF7", "breast", "ATCC", "HTB-22"], ["HCC1428", "breast", "ATCC", "CRL-2327"], ["Hs 274.T", "breast", "ATCC", "CRL-7222"], ["MDA-MB-415", "breast", "ATCC", "HTB-128"], ["HS 739.T", "breast", "ATCC", "CRL-7477"], ["EFM-192A", "breast", "DSMZ", "ACC 258"], ["HDQ-P1", "breast", "DSMZ", "ACC 494"], ["JIMT-1", "breast", "DSMZ", "ACC 589"], ["DBTRG-05MG", "central_nervous_system", "ATCC", "CRL-2020"], ["Hs 683", "central_nervous_system", "ATCC", "HTB-138"], ["CCF-STTG1", "central_nervous_system", "ATCC", "CRL-1718"], ["LN-18", "central_nervous_system", "ATCC", "CRL-2610"], ["LN-229", "central_nervous_system", "ATCC", "CRL-2611"], ["D283 Med", "central_nervous_system", "ATCC", "HTB-185"], ["SW 1783", "central_nervous_system", "ATCC", "HTB-13"], ["U-87 MG", "central_nervous_system", "ATCC", "HTB-14"], ["A-172", "central_nervous_system", "ATCC", "CRL-1620"], ["T98G", "central_nervous_system", "ATCC", "CRL-1690"], ["TM-31", "central_nervous_system", "RIKEN", "RCB1731"], ["8-MG-BA", "central_nervous_system", "DSMZ", "ACC 432"], ["DK-MG", "central_nervous_system", "DSMZ", "ACC 277"], ["SNB-19", "central_nervous_system", "DSMZ", "ACC 325"], ["GB-1", "central_nervous_system", "HSRRB", "IFO50489"], ["KNS-42", "central_nervous_system", "HSRRB", "IFO50356"], ["U-251 MG", "central_nervous_system", "HSRRB", "IFO50288"], ["YH-13", "central_nervous_system", "HSRRB", "IFO50493"], ["YKG1", "central_nervous_system", "HSRRB", "JCRB0746"], ["U-251 MG", "central_nervous_system", "Sigma", "09063001-1VL"], ["CAS-1", "central_nervous_system", "ICLC", "n/a"], ["SF-295", "central_nervous_system", "NCI/DCTD", "507441"], ["D341 Med", "central_nervous_system", "ATCC", "HTB-187"], ["SW 1088", "central_nervous_system", "ATCC", "HTB-12"], ["Daoy", "central_nervous_system", "ATCC", "HTB-186"], ["M059K", "central_nervous_system", "ATCC", "CRL-2365"], ["SNU-1105", "central_nervous_system", "KCLB", "n/a"], ["SNU-201", "central_nervous_system", "KCLB", "n/a"], ["SNU-466", "central_nervous_system", "KCLB", "n/a"], ["SNU-626", "central_nervous_system", "KCLB", "n/a"], ["GI-1", "central_nervous_system", "RIKEN", "RCB0763"], ["42-MG-BA", "central_nervous_system", "DSMZ", "ACC 431"], ["GAMG", "central_nervous_system", "DSMZ", "ACC 242"], ["GMS-10", "central_nervous_system", "DSMZ", "ACC 405"], ["GOS-3", "central_nervous_system", "DSMZ", "ACC 408"], ["AM-38", "central_nervous_system", "HSRRB", "IFO50492"], ["Becker", "central_nervous_system", "HSRRB", "IFO50289"], ["KALS-1", "central_nervous_system", "HSRRB", "IFO50434"], ["KG-1-C", "central_nervous_system", "HSRRB", "JCRB0236"], ["KNS-60", "central_nervous_system", "HSRRB", "IFO50357"], ["KNS-81", "central_nervous_system", "HSRRB", "IFO50359"], ["KS-1", "central_nervous_system", "HSRRB", "IFO50436"], ["NMC-G1", "central_nervous_system", "HSRRB", "IFO50467"], ["ONS-76", "central_nervous_system", "HSRRB", "IFO50355"], ["SF126", "central_nervous_system", "HSRRB", "IFO50286"], ["H4", "central_nervous_system", "ATCC", "HTB-148"], ["Ca Ski", "cervical carcinoma", "ATCC", "CRL-1550"], ["SiHa", "cervical carcinoma", "ATCC", "HTB-35"], ["ME-180", "cervical carcinoma", "ATCC", "HTB-33"], ["MS751", "cervical carcinoma", "ATCC", "HTB-34"], ["MDST8", "colon", "ECACC", "99011801"], ["HT115", "colon", "ECACC", "85061104"], ["Hs 255.T", "colon", "ATCC", "CRL-7213"], ["NTERA-2 cl.D1 [NT2/D1]", "embryonal carcinoma", "ATCC", "CRL-1973"], ["KLE", "endometrium", "ATCC", "CRL-1622"], ["HEC-251", "endometrium", "HSRRB", "JCRB1141"], ["HEC-59", "endometrium", "HSRRB", "JCRB1120"], ["Ishikawa", "endometrium", "ECACC", "99040201"], ["AN3 CA", "endometrium", "ATCC", "HTB-111"], ["HEC-1-A", "endometrium", "ATCC", "HTB-112"], ["SNU-685", "endometrium", "KCLB", "n/a"], ["JHUEM-1", "endometrium", "RIKEN", "RCB1548"], ["JHUEM-2", "endometrium", "RIKEN", "RCB1551"], ["JHUEM-7", "endometrium", "RIKEN", "RCB1677"], ["EFE-184", "endometrium", "DSMZ", "ACC 230"], ["EN", "endometrium", "DSMZ", "ACC 564"], ["ESS-1", "endometrium", "DSMZ", "ACC 461"], ["MFE-280", "endometrium", "DSMZ", "ACC 410"], ["MFE-296", "endometrium", "DSMZ", "ACC 419"], ["MFE-319", "endometrium", "DSMZ", "ACC 423"], ["HEC-108", "endometrium", "HSRRB", "JCRB1123"], ["HEC-151", "endometrium", "HSRRB", "JCRB1122"], ["HEC-265", "endometrium", "HSRRB", "JCRB1142"], ["HEC-50B", "endometrium", "HSRRB", "JCRB1145"], ["HEC-6", "endometrium", "HSRRB", "JCRB1118"], ["SNG-M", "endometrium", "HSRRB", "JCRB0179"], ["RL95-2", "endometrium", "ATCC", "CRL-1671"], ["HUVEC", "endothelium", "Lonza", "CC-2519"], ["CW-2", "F", "RIKEN", "RCB0778"], ["MPNST", "general sarcoma", "Parag P. Patwardhan", "n/a"], ["GIST-T1", "GIST sarcoma", "Califano", "n/a"], ["GIST 430/654", "GIST sarcoma", "Califano", "n/a"], ["Daudi", "haematopoietic_and_lymphoid_tissue", "ATCC", "CCL-213"], ["RPMI 6666", "haematopoietic_and_lymphoid_tissue", "ATCC", "CCL-113"], ["Reh", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-8286"], ["RPMI 8226", "haematopoietic_and_lymphoid_tissue", "ATCC", "CCL-155"], ["K-562", "haematopoietic_and_lymphoid_tissue", "ATCC", "CCL-243"], ["KG-1", "haematopoietic_and_lymphoid_tissue", "ATCC", "CCL-246"], ["U-937", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1593.2"], ["THP-1", "haematopoietic_and_lymphoid_tissue", "ATCC", "TIB-202"], ["Pfeiffer", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2632"], ["MEG-01", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2021"], ["MC116", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1649"], ["DB", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2289"], ["Toledo", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2631"], ["HT", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2260"], ["MV-4-11", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-9591"], ["697", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 42"], ["AMO-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 538"], ["DOHH-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 47"], ["EJM", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 560"], ["JURKAT", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 282"], ["KARPAS-299", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 31"], ["LP-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 41"], ["MOLM-16", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 555"], ["OCI-AML2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 99"], ["OCI-AML3", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 582"], ["OCI-LY-19", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 528"], ["OPM-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 50"], ["PF-382", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 38"], ["PL-21", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 536"], ["SU-DHL-10", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 576"], ["SU-DHL-5", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 571"], ["SU-DHL-6", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2959"], ["SUP-M2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 509"], ["WSU-DLCL2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 575"], ["A3/KAW", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB0101"], ["A4/Fuk", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB0097"], ["Ki-JK", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1065"], ["KMS-11", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1179"], ["SKM-1", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB0118"], ["U266B1", "haematopoietic_and_lymphoid_tissue", "ATCC", "TIB-196"], ["HuNS1", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-8644"], ["NCI-H929", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-9068"], ["HTK-", "haematopoietic_and_lymphoid_tissue", "ECACC", "88022409"], ["EB-2", "haematopoietic_and_lymphoid_tissue", "ATCC", "HTB-61"], ["P3HR-1", "haematopoietic_and_lymphoid_tissue", "ATCC", "HTB-62"], ["BCP-1", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2294"], ["BDCM", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2740"], ["NAMALWA", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1432"], ["EB-1", "haematopoietic_and_lymphoid_tissue", "ATCC", "HTB-60"], ["Raji", "haematopoietic_and_lymphoid_tissue", "ATCC", "CCL-86"], ["MJ", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-8294"], ["HuT 102", "haematopoietic_and_lymphoid_tissue", "ATCC", "TIB-162"], ["Hs 616.T", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-7378"], ["Kasumi-6", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2775"], ["TO 175.T", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-7779"], ["CA46", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1648"], ["GA-10", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2392"], ["AML-193", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-9589"], ["SUP-T1", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1942"], ["KU812", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2099"], ["SUP-B15", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1929"], ["RL", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2261"], ["TF-1", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2003"], ["Hs 604.T", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-7362"], ["JM1", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-10423"], ["Hs 611.T", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-7373"], ["ST486", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1647"], ["Loucy", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2629"], ["RS4 (11)", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1873"], ["Mino", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-3000"], ["PCM6", "haematopoietic_and_lymphoid_tissue", "RIKEN", "RCB1460"], ["BL-41", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 160"], ["BL-70", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 233"], ["BV-173", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 20"], ["CI-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 570"], ["CMK", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 392"], ["CML-T1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 7"], ["DEL", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 338"], ["EHEB", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 67"], ["EOL-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 386"], ["F-36P", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 543"], ["GRANTA-519", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 342"], ["HDLM-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 17"], ["HD-MY-Z", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 346"], ["HPB-ALL", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 483"], ["JeKo-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 553"], ["JK-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 347"], ["JURL-MK1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 532"], ["JVM-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 12"], ["JVM-3", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 18"], ["KARPAS-620", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 514"], ["KCL-22", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 519"], ["KE-37", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 46"], ["KM-H2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 8"], ["KMS-12-BM", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 551"], ["KOPN-8", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 552"], ["KYO-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 601"], ["L-1236", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 530"], ["L-363", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 49"], ["L-428", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 197"], ["L-540", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 72"], ["LAMA-84", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 168"], ["M-07e", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 104"], ["ME-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 537"], ["MEC-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 500"], ["MHH-CALL-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 341"], ["MHH-CALL-3", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 339"], ["MHH-CALL-4", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 337"], ["MOLM-13", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 554"], ["MOLM-6", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 611"], ["MOLP-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 607"], ["MOLP-8", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 569"], ["MOLT-13", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 436"], ["MOLT-16", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 29"], ["NALM-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 131"], ["NALM-19", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 522"], ["NALM-6", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 128"], ["NB-4", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 207"], ["NU-DHL-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 583"], ["OCI-AML5", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 247"], ["OCI-M1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 529"], ["P12-ICHIKAWA", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 34"], ["RCH-ACV", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 548"], ["REC-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 584"], ["RI-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 585"], ["RPMI-8402", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 290"], ["SEM", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 546"], ["SIG-M5", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 468"], ["SR-786", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 369"], ["SU-DHL-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 356"], ["SU-DHL-4", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 495"], ["SU-DHL-8", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 573"], ["SUP-HD1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 574"], ["SUP-T11", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 605"], ["UT-7", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 137"], ["CMK-11-5", "haematopoietic_and_lymphoid_tissue", "HSRRB", "IFO50430"], ["CMK-86", "haematopoietic_and_lymphoid_tissue", "HSRRB", "IFO50428"], ["KHM-1B", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB0133"], ["KMM-1", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1180"], ["KMS-20", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1196"], ["KMS-21BM", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1185"], ["KMS-26", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1187"], ["KMS-27", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1188"], ["KMS-28BM", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1192"], ["KMS-34", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB1195"], ["KO52", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB0123"], ["NCO2", "haematopoietic_and_lymphoid_tissue", "HSRRB", "IFO50525"], ["NOMO-1", "haematopoietic_and_lymphoid_tissue", "HSRRB", "IFO50474"], ["P31/FUJ", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB0091"], ["PEER", "haematopoietic_and_lymphoid_tissue", "HSRRB", "JCRB0830"], ["HL-60", "haematopoietic_and_lymphoid_tissue", "ATCC", "CCL-240"], ["EM-2", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 135"], ["KASUMI-1", "haematopoietic_and_lymphoid_tissue", "DSMZ", "ACC 220"], ["MOLT-4", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1582"], ["HH", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-2105"], ["HuT 78", "haematopoietic_and_lymphoid_tissue", "ATCC", "TIB-161"], ["BJ5ta", "immortalized fibroblasts", "ATCC", "CRL-4001"], ["A-498", "kidney", "ATCC", "HTB-44"], ["ACHN", "kidney", "ATCC", "CRL-1611"], ["786-O", "kidney", "ATCC", "CRL-1932"], ["Caki-1", "kidney", "ATCC", "HTB-46"], ["SK-N-EP", "kidney", "", ""], ["769-P", "kidney", "ATCC", "CRL-1933"], ["Caki-2", "kidney", "ATCC", "HTB-47"], ["SNU-1272", "kidney", "KCLB", "n/a"], ["SNU-349", "kidney", "KCLB", "n/a"], ["RCC10RGB", "kidney", "RIKEN", "RCB1151"], ["TUHR14TKB", "kidney", "RIKEN", "RCB1383"], ["VMRC-RCW", "kidney", "RIKEN", "RCB1963"], ["BFTC-909", "kidney", "DSMZ", "ACC 367"], ["KMRC-1", "kidney", "HSRRB", "JCRB1010"], ["KMRC-2", "kidney", "HSRRB", "JCRB1011"], ["KMRC-20", "kidney", "HSRRB", "JCRB1071"], ["KMRC-3", "kidney", "HSRRB", "JCRB1012"], ["VMRC-RCZ", "kidney", "HSRRB", "JCRB0827"], ["Wit49", "Kidney Wilms tumor", "MSKCC", ""], ["KP-MRT-NS", "Kyoto Pediatrics-Malignant Rhabdoid Tumor-NS", "MSKCC", ""], ["LS123", "large_intestine", "ATCC", "CCL-255"], ["NCI-H508", "large_intestine", "ATCC", "CCL-253"], ["Hs 675.T", "large_intestine", "ATCC", "CRL-7400"], ["SW1463", "large_intestine", "ATCC", "CCL-234"], ["SNU-C1", "large_intestine", "ATCC", "CRL-5972"], ["SK-CO-1", "large_intestine", "ATCC", "HTB-39"], ["NCI-H747", "large_intestine", "ATCC", "CCL-252"], ["SW1116", "large_intestine", "ATCC", "CCL-233"], ["RKO", "large_intestine", "ATCC", "CRL-2577"], ["DLD-1", "large_intestine", "ATCC", "CCL-221"], ["LS411N", "large_intestine", "ATCC", "CRL-2159"], ["LS 180", "large_intestine", "ATCC", "CL-187"], ["HCT-15", "large_intestine", "ATCC", "CCL-225"], ["SW480", "large_intestine", "ATCC", "CCL-228"], ["HT-29", "large_intestine", "ATCC", "HTB-38"], ["T84", "large_intestine", "ATCC", "CCL-248"], ["LoVo", "large_intestine", "ATCC", "CCL-229"], ["C2BBe1 clone of Caco-2", "large_intestine", "ATCC", "CRL-2102"], ["NCI-H716 (H716)", "large_intestine", "ATCC", "CCL-251"], ["SW48", "large_intestine", "ATCC", "CCL-231"], ["COLO 205", "large_intestine", "ATCC", "CCL-222"], ["LS513", "large_intestine", "ATCC", "CRL-2134"], ["SW948", "large_intestine", "ATCC", "CCL-237"], ["SW837", "large_intestine", "ATCC", "CCL-235"], ["LS1034", "large_intestine", "ATCC", "CRL-2158"], ["SNU-283", "large_intestine", "KCLB", "n/a"], ["SNU-61", "large_intestine", "KCLB", "n/a"], ["SNU-C4", "large_intestine", "KCLB", "n/a"], ["SNU-C5", "large_intestine", "KCLB", "n/a"], ["COLO-320", "large_intestine", "DSMZ", "ACC 144"], ["CCK-81", "large_intestine", "HSRRB", "JCRB0208"], ["OUMS-23", "large_intestine", "HSRRB", "JCRB1022"], ["HCT-116", "large_intestine", "Califano", "n/a"], ["GP2d", "large_intestine", "ECACC", "95090714"], ["SW1417", "large_intestine", "ATCC", "CCL-238"], ["SNU-C2A", "large_intestine", "ATCC", "CCL-250.1"], ["SW620", "large_intestine", "ATCC", "CCL-227"], ["HCT 116", "large_intestine", "ATCC", "CCL-247"], ["SNU-1040", "large_intestine", "KCLB", "n/a"], ["SNU-175", "large_intestine", "KCLB", "n/a"], ["SNU-407", "large_intestine", "KCLB", "n/a"], ["SNU-503", "large_intestine", "KCLB", "n/a"], ["SNU-81", "large_intestine", "KCLB", "n/a"], ["CL-11", "large_intestine", "DSMZ", "ACC 467"], ["CL-34", "large_intestine", "DSMZ", "ACC 520"], ["COLO-678", "large_intestine", "DSMZ", "ACC 194"], ["HCC-56", "large_intestine", "HSRRB", "JCRB1037"], ["RCM-1", "large_intestine", "HSRRB", "JCRB0256"], ["LS141", "liposarcoma", "Parag P. Patwardhan", "n/a"], ["SNU-387", "liver", "ATCC", "CRL-2237"], ["Hep 3B2.1-7", "liver", "ATCC", "HB-8064"], ["PLC/PRF/5", "liver", "ATCC", "CRL-8024"], ["SNU-182", "liver", "ATCC", "CRL-2235"], ["SNU-398", "liver", "ATCC", "CRL-2233"], ["Hep G2", "liver", "ATCC", "HB-8065"], ["SK-HEP-1", "liver", "ATCC", "HTB-52"], ["C3A (HepG2/C3A)", "liver", "ATCC", "CRL-10741"], ["SNU-878", "liver", "KCLB", "n/a"], ["HuH-6", "liver", "RIKEN", "RCB1367"], ["HLF", "liver", "HSRRB", "JCRB0405"], ["HuH-7", "liver", "HSRRB", "JCRB0403"], ["JHH-1", "liver", "HSRRB", "JCRB1062"], ["JHH-2", "liver", "HSRRB", "JCRB1028"], ["JHH-5", "liver", "HSRRB", "JCRB1029"], ["JHH-7", "liver", "HSRRB", "JCRB1031"], ["SNU-449", "liver", "ATCC", "CRL-2234"], ["SNU-475", "liver", "ATCC", "CRL-2236"], ["SNU-423", "liver", "ATCC", "CRL-2238"], ["HLF-a", "liver", "ATCC", "CCL-199"], ["SNU-761", "liver", "KCLB", "n/a"], ["SNU-886", "liver", "KCLB", "n/a"], ["huH-1", "liver", "HSRRB", "JCRB0199"], ["JHH-4", "liver", "HSRRB", "JCRB0435"], ["COLO 668", "lung", "ECACC", "87061209"], ["COR-L23", "lung", "ECACC", "92031919"], ["COR-L24", "lung", "ECACC", "96020717"], ["NCI-H2172", "lung", "ATCC", "CRL-5930"], ["NCI-H196", "lung", "ATCC", "CRL-5823"], ["NCI-H2023", "lung", "ATCC", "CRL-5912"], ["NCI-H1373", "lung", "ATCC", "CRL-5866"], ["NCI-H1793", "lung", "ATCC", "CRL-5896"], ["NCI-H1437", "lung", "ATCC", "CRL-5872"], ["SW 900", "lung", "ATCC", "HTB-59"], ["NCI-H838", "lung", "ATCC", "CRL-5844"], ["NCI-H520", "lung", "ATCC", "HTB-182"], ["NCI-H1395", "lung", "ATCC", "CRL-5868"], ["NCI-H226", "lung", "ATCC", "CRL-5826"], ["NCI-H727", "lung", "ATCC", "CRL-5815"], ["NCI-H358", "lung", "ATCC", "CRL-5807"], ["NCI-H23", "lung", "ATCC", "CRL-5800"], ["A-549", "lung", "ATCC", "CCL-185"], ["Calu-3", "lung", "ATCC", "HTB-55"], ["NCI-H1975", "lung", "ATCC", "CRL-5908"], ["NCI-H460", "lung", "ATCC", "HTB-177"], ["NCI-H526", "lung", "ATCC", "CRL-5811"], ["NCI-H1650 (H1650)", "lung", "ATCC", "CRL-5883"], ["NCI-H69", "lung", "ATCC", "HTB-119"], ["NCI-H1299", "lung", "ATCC", "CRL-5803"], ["NCI-H441", "lung", "ATCC", "HTB-174"], ["HCC827", "lung", "ATCC", "CRL-2868"], ["NCI-H2126", "lung", "ATCC", "CCL-256"], ["NCI-H1944", "lung", "ATCC", "CRL-5907"], ["SHP-77", "lung", "ATCC", "CRL-2195"], ["SK-MES-1", "lung", "ATCC", "HTB-58"], ["SK-LU-1", "lung", "ATCC", "HTB-57"], ["Calu-1", "lung", "ATCC", "HTB-54"], ["NCI-H2087", "lung", "ATCC", "CRL-5922"], ["NCI-H209", "lung", "ATCC", "HTB-172"], ["NCI-H1963", "lung", "ATCC", "CRL-5982"], ["HCC4006", "lung", "ATCC", "CRL-2871"], ["NCI-H2444", "lung", "ATCC", "CRL-5945"], ["Hs 229.T", "lung", "ATCC", "CRL-7194_FL"], ["Hs 618.T", "lung", "ATCC", "CRL-7380_FL"], ["HCC-366", "lung", "DSMZ", "ACC 492"], ["ABC-1", "lung", "HSRRB", "JCRB0815"], ["HARA", "lung", "HSRRB", "JCRB1080.0"], ["KNS-62", "lung", "HSRRB", "IFO50358"], ["RERF-LC-Ad2", "lung", "HSRRB", "JCRB1021"], ["ChaGo-K-1", "lung", "ECACC", "96020948"], ["COR-L279", "lung", "ECACC", "96020724"], ["COR-L311", "lung", "ECACC", "96020721"], ["COR-L47", "lung", "ECACC", "92031915"], ["COR-L88", "lung", "ECACC", "92031917"], ["COR-L95", "lung", "ECACC", "96020733"], ["DMS 273", "lung", "ECACC", "95062830"], ["DMS 454", "lung", "ECACC", "95062832"], ["LUDLU-1", "lung", "ECACC", "92012463"], ["MOR/CPR", "lung", "ECACC", "96042333"], ["NCI-H322", "lung", "ECACC", "95111734"], ["NCI-H1341", "lung", "ATCC", "CRL-5864"], ["NCI-H2286", "lung", "ATCC", "CRL-5938"], ["NCI-H2347", "lung", "ATCC", "CRL-5942"], ["NCI-H2029", "lung", "ATCC", "CRL-5913"], ["NCI-H2122", "lung", "ATCC", "CRL-5985"], ["NCI-H1836", "lung", "ATCC", "CRL-5898"], ["NCI-H446", "lung", "ATCC", "HTB-171"], ["NCI-H1781", "lung", "ATCC", "CRL-5894"], ["NCI-H1651", "lung", "ATCC", "CRL-5884"], ["NCI-H1930", "lung", "ATCC", "CRL-5906"], ["NCI-H889", "lung", "ATCC", "CRL-5817"], ["NCI-H1568", "lung", "ATCC", "CRL-5876"], ["NCI-H841", "lung", "ATCC", "CRL-5845"], ["NCI-H1755", "lung", "ATCC", "CRL-5892"], ["NCI-H810", "lung", "ATCC", "CRL-5816"], ["NCI-H1694", "lung", "ATCC", "CRL-5888"], ["NCI-H1618", "lung", "ATCC", "CRL-5879"], ["DMS 153", "lung", "ATCC", "CRL-2064"], ["NCI-H1581", "lung", "ATCC", "CRL-5878"], ["NCI-H1563", "lung", "ATCC", "CRL-5875"], ["NCI-H211", "lung", "ATCC", "CRL-5824"], ["NCI-H524", "lung", "ATCC", "CRL-5831"], ["NCI-H1048", "lung", "ATCC", "CRL-5853"], ["NCI-H1573", "lung", "ATCC", "CRL-5877"], ["NCI-H2291", "lung", "ATCC", "CRL-5939"], ["NCI-H2110", "lung", "ATCC", "CRL-5924"], ["NCI-H2405", "lung", "ATCC", "CRL-5944"], ["NCI-H1792", "lung", "ATCC", "CRL-5895"], ["NCI-H2170", "lung", "ATCC", "CRL-5928"], ["NCI-H522", "lung", "ATCC", "CRL-5810"], ["NCI-H1666", "lung", "ATCC", "CRL-5885"], ["DMS 114", "lung", "ATCC", "CRL-2066"], ["NCI-H1734", "lung", "ATCC", "CRL-5891"], ["NCI-H2228", "lung", "ATCC", "CRL-5935"], ["NCI-H2085", "lung", "ATCC", "CRL-5921"], ["NCI-H2171", "lung", "ATCC", "CRL-5929"], ["SW 1271", "lung", "ATCC", "CRL-2177"], ["NCI-H647", "lung", "ATCC", "CRL-5834"], ["NCI-H1915", "lung", "ATCC", "CRL-5904"], ["DMS 79", "lung", "ATCC", "CRL-2049"], ["NCI-H1435", "lung", "ATCC", "CRL-5870"], ["NCI-H596", "lung", "ATCC", "HTB-178"], ["NCI-H1105", "lung", "ATCC", "CRL-5856"], ["NCI-H2081", "lung", "ATCC", "CRL-5920"], ["NCI-H650", "lung", "ATCC", "CRL-5835"], ["NCI-H2106", "lung", "ATCC", "CRL-5923"], ["NCI-H1092", "lung", "ATCC", "CRL-5855"], ["NCI-H2196", "lung", "ATCC", "CRL-5932"], ["NCI-H1184", "lung", "ATCC", "CRL-5858"], ["NCI-H1623", "lung", "ATCC", "CRL-5881"], ["NCI-H1838", "lung", "ATCC", "CRL-5899"], ["NCI-H2227", "lung", "ATCC", "CRL-5934"], ["NCI-H1155", "lung", "ATCC", "CRL-5818"], ["NCI-H1876", "lung", "ATCC", "CRL-5902"], ["NCI-H1693", "lung", "ATCC", "CRL-5887"], ["NCI-H1355", "lung", "ATCC", "CRL-5865"], ["NCI-H2073", "lung", "ATCC", "CRL-5918"], ["NCI-H146", "lung", "ATCC", "HTB-173"], ["SW 1573", "lung", "ATCC", "CRL-2170"], ["DMS 53", "lung", "ATCC", "CRL-2062"], ["NCI-H2066", "lung", "ATCC", "CRL-5917"], ["NCI-H2141", "lung", "ATCC", "CRL-5927"], ["HCC-1171", "lung", "KCLB", "n/a"], ["HCC-1195", "lung", "KCLB", "n/a"], ["HCC-95", "lung", "KCLB", "n/a"], ["EBC-1", "lung", "RIKEN", "RCB1965"], ["IA-LM", "lung", "RIKEN", "RCB0554"], ["LK-2", "lung", "RIKEN", "RCB1970"], ["RERF-LC-AI", "lung", "RIKEN", "RCB0444"], ["BEN", "lung", "DSMZ", "ACC 254"], ["CAL-12T", "lung", "DSMZ", "ACC 443"], ["CPC-N", "lung", "DSMZ", "ACC 306"], ["EPLC-272H", "lung", "DSMZ", "ACC 383"], ["HCC-15", "lung", "DSMZ", "ACC 496"], ["HCC-33", "lung", "DSMZ", "ACC 487"], ["HCC-44", "lung", "DSMZ", "ACC 534"], ["HCC-78", "lung", "DSMZ", "ACC 563"], ["LCLC-103H", "lung", "DSMZ", "ACC 384"], ["LCLC-97TM1", "lung", "DSMZ", "ACC 388"], ["LOU-NH91", "lung", "DSMZ", "ACC 393"], ["LXF-289", "lung", "DSMZ", "ACC 265"], ["SCLC-21H", "lung", "DSMZ", "ACC 372"], ["LU65", "lung", "HSRRB", "JCRB0079"], ["LU99", "lung", "HSRRB", "JCRB0080"], ["RERF-LC-Ad1", "lung", "HSRRB", "JCRB1020"], ["RERF-LC-KJ", "lung", "HSRRB", "JCRB0137"], ["RERF-LC-MS", "lung", "HSRRB", "JCRB0081"], ["SBC-5", "lung", "HSRRB", "JCRB0819"], ["NCI-H2342", "lung", "ATCC", "CRL-5941"], ["NCI-H2030", "lung", "ATCC", "CRL-5914"], ["DV-90", "lung", "DSMZ", "ACC 307"], ["NCI-H2009", "lung", "ATCC", "CRL-5911"], ["NCI-H1648", "lung", "ATCC", "CRL-5882"], ["NCI-H661", "lung", "ATCC", "HTB-183"], ["NCI-H82", "lung", "ATCC", "HTB-175"], ["NCI-H510A", "lung", "ATCC", "HTB-184"], ["Calu-6", "lung", "ATCC", "HTB-56"], ["NCI-H1703", "lung", "ATCC", "CRL-5889"], ["hTERT-HME1 (ME16C)", "mammary epithelium", "ATCC", "CRL-4010"], ["CH-157MN", "meningioma", "Broad", "n/a"], ["IOMM-Lee", "meningioma", "Broad", "n/a"], ["F-5", "meningioma", "Broad", "n/a"], ["MRR TB4529", "meningioma", "Columbia", "n/a"], ["SH-SY5H", "neuroblastoma", "ATCC", "CRL-2266"], ["H-STS", "Neuroendocrine", "Broad", ""], ["KRJ-I", "Neuroendocrine", "Broad", ""], ["P-STS", "Neuroendocrine", "Broad", ""], ["HF2597", "neurosphere", "Henry Ford Foundation", ""], ["HF2414", "neurosphere", "Henry Ford Foundation", ""], ["NL20", "Non-tumorgeneric", "ATCC", ""], ["BJ", "Non-tumorgeneric", "ATCC", ""], ["FHs 74 Int", "Non-tumorgeneric", "ATCC", ""], ["RWPE-1", "Non-tumorgeneric", "ATCC", ""], ["MCF10A", "Non-tumorgeneric", "ATCC", ""], ["TE-15", "oesophagus", "RIKEN", "RCB1951"], ["KYSE-30", "oesophagus", "DSMZ", "ACC 351"], ["KYSE-410", "oesophagus", "DSMZ", "ACC 381"], ["KYSE-450", "oesophagus", "DSMZ", "ACC 387"], ["ESO-26", "oesophagus", "Price Foundation", ""], ["ESO-51", "oesophagus", "Price Foundation", ""], ["SK-GT-4", "oesophagus", "Price Foundation", ""], ["FLO-1", "oesophagus", "Price Foundation", ""], ["KYAE-1", "oesophagus", "Price Foundation", ""], ["OAC-M5.1", "oesophagus", "Price Foundation", ""], ["JHESOAD1", "oesophagus", "Price Foundation", ""], ["OE19", "oesophagus", "ECACC", "96071721"], ["OE21", "oesophagus", "ECACC", "96062201"], ["OE33", "oesophagus", "ECACC", "96070808"], ["EC-GI-10", "oesophagus", "RIKEN", "RCB0774"], ["TE-1", "oesophagus", "RIKEN", "RCB1894"], ["TE-10", "oesophagus", "RIKEN", "RCB2099"], ["TE-11", "oesophagus", "RIKEN", "RCB2100"], ["TE-14", "oesophagus", "RIKEN", "RCB2101"], ["TE-4", "oesophagus", "RIKEN", "RCB2097"], ["TE-5", "oesophagus", "RIKEN", "RCB1949"], ["TE-6", "oesophagus", "RIKEN", "RCB1950"], ["TE-8", "oesophagus", "RIKEN", "RCB2098"], ["TE-9", "oesophagus", "RIKEN", "RCB1988"], ["COLO-680N", "oesophagus", "DSMZ", "ACC 182"], ["KYSE-140", "oesophagus", "DSMZ", "ACC 348"], ["KYSE-150", "oesophagus", "DSMZ", "ACC 375"], ["KYSE-180", "oesophagus", "DSMZ", "ACC 379"], ["KYSE-270", "oesophagus", "DSMZ", "ACC 380"], ["KYSE-510", "oesophagus", "DSMZ", "ACC 374"], ["KYSE-520", "oesophagus", "DSMZ", "ACC 371"], ["KYSE-70", "oesophagus", "DSMZ", "ACC 363"], ["T.T", "oesophagus", "HSRRB", "JCRB0262"], ["MSKOST", "osteosarcoma", "", ""], ["OC 314", "ovary", "ICLC", "n/a"], ["COV318", "ovary", "ECACC", "7071903"], ["COV362", "ovary", "ECACC", "7071910"], ["IGR-OV1", "ovary", "NCI/DCTD", "507371"], ["OVCAR-4", "ovary", "NCI/DCTD", "507672"], ["NIH:OVCAR-3", "ovary", "ATCC", "HTB-161"], ["SK-OV-3", "ovary", "ATCC", "HTB-77"], ["OV-90", "ovary", "ATCC", "CRL-11732"], ["ES-2", "ovary", "ATCC", "CRL-1978"], ["TOV-21G", "ovary", "ATCC", "CRL-11730"], ["Caov-3", "ovary", "ATCC", "HTB-75"], ["SNU-119", "ovary", "KCLB", "n/a"], ["SNU-840", "ovary", "KCLB", "n/a"], ["EFO-21", "ovary", "DSMZ", "ACC 235"], ["FU-OV-1", "ovary", "DSMZ", "ACC 444"], ["KURAMOCHI", "ovary", "HSRRB", "JCRB0098"], ["MCAS", "ovary", "HSRRB", "JCRB0240"], ["OVISE", "ovary", "HSRRB", "JCRB1043"], ["OVKATE", "ovary", "HSRRB", "JCRB1044"], ["RKN", "ovary", "HSRRB", "JCRB0176"], ["TYK-nu", "ovary", "HSRRB", "JCRB0234.0"], ["OAW28", "ovary", "ECACC", "85101601"], ["59M", "ovary", "ECACC", "89081802"], ["A2780", "ovary", "ECACC", "93112519"], ["COV434", "ovary", "ECACC", "7071909"], ["COV504", "ovary", "ECACC", "7071902"], ["COV644", "ovary", "ECACC", "7071908"], ["OAW42", "ovary", "ECACC", "85073102"], ["OV56", "ovary", "ECACC", "96020759"], ["OV7", "ovary", "ECACC", "96020764"], ["Caov-4", "ovary", "ATCC", "HTB-76"], ["JHOC-5", "ovary", "RIKEN", "RCB1520"], ["JHOM-1", "ovary", "RIKEN", "RCB1676"], ["JHOS-4", "ovary", "RIKEN", "RCB1678"], ["OVK18", "ovary", "RIKEN", "RCB1903"], ["EFO-27", "ovary", "DSMZ", "ACC 191"], ["OVMANA", "ovary", "HSRRB", "JCRB1045"], ["OVSAHO", "ovary", "HSRRB", "JCRB1046"], ["OVTOKO", "ovary", "HSRRB", "JCRB1048"], ["RMG-I", "ovary", "HSRRB", "JCRB0172"], ["RMUG-S", "ovary", "HSRRB", "IFO50320"], ["Panc 08.13", "pancreas", "ATCC", "CRL-2551"], ["Panc 03.27", "pancreas", "ATCC", "CRL-2549"], ["HPAC", "pancreas", "ATCC", "CRL-2119"], ["Capan-1", "pancreas", "ATCC", "HTB-79"], ["CFPAC-1", "pancreas", "ATCC", "CRL-1918"], ["MIA PaCa-2", "pancreas", "ATCC", "CRL-1420"], ["PANC-1", "pancreas", "ATCC", "CRL-1469"], ["BxPC-3", "pancreas", "ATCC", "CRL-1687"], ["HPAF-II", "pancreas", "ATCC", "CRL-1997"], ["AsPC-1", "pancreas", "ATCC", "CRL-1682"], ["SW 1990", "pancreas", "ATCC", "CRL-2172"], ["SU.86.86", "pancreas", "ATCC", "CRL-1837"], ["SNU-213", "pancreas", "KCLB", "n/a"], ["SNU-324", "pancreas", "KCLB", "n/a"], ["KP4", "pancreas", "RIKEN", "RCB1005"], ["PK-45H", "pancreas", "RIKEN", "RCB1973"], ["HUP-T3", "pancreas", "DSMZ", "ACC 259"], ["HUP-T4", "pancreas", "DSMZ", "ACC 223"], ["PA-TU-8902", "pancreas", "DSMZ", "ACC 179"], ["PA-TU-8988S", "pancreas", "DSMZ", "ACC 204"], ["KP-2", "pancreas", "HSRRB", "JCRB0181"], ["SUIT-2", "pancreas", "HSRRB", "JCRB1094"], ["TCC-PAN2", "pancreas", "HSRRB", "JCRB1072"], ["PA-TU-8988T", "pancreas", "DSMZ", "ACC-162"], ["QGP-1", "pancreas", "HSRRB", "JCRB0183"], ["PSN1", "pancreas", "ECACC", "94060601"], ["Panc 02.03", "pancreas", "ATCC", "CRL-2553"], ["Panc 02.13", "pancreas", "ATCC", "CRL-2554"], ["KLM-1", "pancreas", "RIKEN", "RCB2138"], ["PK-1", "pancreas", "RIKEN", "RCB1972"], ["PK-59", "pancreas", "RIKEN", "RCB1901"], ["T3M-4", "pancreas", "RIKEN", "RCB1021"], ["DAN-G", "pancreas", "DSMZ", "ACC 249"], ["YAPC", "pancreas", "DSMZ", "ACC 382"], ["KP-3", "pancreas", "HSRRB", "JCRB0178.0"], ["Panc 05.04", "pancreas", "ATCC", "CRL-2557"], ["IST-MES1", "pleura", "ICLC", "n/a"], ["IST-MES2", "pleura", "ICLC", "n/a"], ["MPP 89", "pleura", "ICLC", "n/a"], ["NCI-H2452", "pleura", "ATCC", "CRL-5946"], ["ACC-MESO-1", "pleura", "RIKEN", "RCB2292"], ["NCI-H2052", "pleura", "ATCC", "CRL-5915"], ["NCI-H28", "pleura", "ATCC", "CRL-5820"], ["MSTO-211H", "pleura", "ATCC", "CRL-2081"], ["VCaP", "prostate", "ATCC", "CRL-2876"], ["22Rv1", "prostate", "ATCC", "CRL-2505"], ["NCI-H660", "prostate", "ATCC", "CRL-5813"], ["LNCaP clone FGC", "prostate", "ATCC", "CRL-1740"], ["PC-3", "prostate", "ATCC", "CRL-1435"], ["DU 145", "prostate", "ATCC", "HTB-81"], ["MDA PCa 2b", "prostate", "ATCC", "CRL-2422"], ["MCF7***", "resistant", "JG", "n/a"], ["MSKRMS", "rhabdomyosarcoma", "", ""], ["A-253", "salivary_gland", "ATCC", "HTB-41"], ["YD-15", "salivary_gland", "KCLB", "n/a"], ["MNPST", "sarcoma, malignant peripheral nerve sheath tumors", "Parag P. Patwardhan", ""], ["SK-MEL-2", "skin", "ATCC", "HTB-68"], ["Hs 936.T", "skin", "ATCC", "CRL-7686_FL"], ["Hs 939.T", "skin", "ATCC", "CRL-7690_FL"], ["Hs 944.T", "skin", "ATCC", "CRL-7693_FL"], ["COLO 741", "skin", "ECACC", "93052621"], ["COLO 792", "skin", "ECACC", "93052616"], ["LOX IMVI", "skin", "NCI/DCTD", "507374"], ["UACC-257", "skin", "NCI/DCTD", "507429"], ["UACC-62", "skin", "NCI/DCTD", "507382"], ["Hs 895.T", "skin", "ATCC", "CRL-7637"], ["SK-MEL-1", "skin", "ATCC", "HTB-67"], ["SK-MEL-24", "skin", "ATCC", "HTB-71"], ["SK-MEL-31", "skin", "ATCC", "HTB-73"], ["COLO 829", "skin", "ATCC", "CRL-1974"], ["RPMI-7951", "skin", "ATCC", "HTB-66"], ["C32", "skin", "ATCC", "CRL-1585"], ["WM-115", "skin", "ATCC", "CRL-1675"], ["Hs 688 (A). T", "skin", "ATCC", "CRL-7425"], ["HMCB", "skin", "ATCC", "CRL-9607"], ["SK-MEL-3", "skin", "ATCC", "HTB-69"], ["Hs 294T", "skin", "ATCC", "HTB-140"], ["G-361", "skin", "ATCC", "CRL-1424"], ["MeWo", "skin", "ATCC", "HTB-65"], ["SH-4", "skin", "ATCC", "CRL-7724"], ["A101D", "skin", "ATCC", "CRL-7898"], ["Hs 839.T", "skin", "ATCC", "CRL-7572"], ["Hs 940.T", "skin", "ATCC", "CRL-7691"], ["HT-144", "skin", "ATCC", "HTB-63"], ["HS 695T", "skin", "ATCC", "HTB-137"], ["Hs 600.T", "skin", "ATCC", "CRL-7360"], ["Hs 934.T", "skin", "ATCC", "CRL-7684"], ["CJM", "skin", "RIKEN", "RCB1034"], ["COLO-679", "skin", "DSMZ", "ACC 264"], ["COLO-783", "skin", "DSMZ", "ACC 257"], ["COLO-800", "skin", "DSMZ", "ACC 193"], ["COLO-818", "skin", "DSMZ", "ACC 81"], ["COLO-849", "skin", "DSMZ", "ACC 216"], ["IGR-1", "skin", "DSMZ", "ACC 236"], ["IGR-37", "skin", "DSMZ", "ACC 237"], ["IGR-39", "skin", "DSMZ", "ACC 239"], ["IPC-298", "skin", "DSMZ", "ACC 251"], ["MEL-HO", "skin", "DSMZ", "ACC 62"], ["MEL-JUSO", "skin", "DSMZ", "ACC 74"], ["RVH-421", "skin", "DSMZ", "ACC 127"], ["SK-MEL-30", "skin", "DSMZ", "ACC 151"], ["SK-MEL-28", "skin", "ATCC", "HTB-72"], ["A2058", "skin", "ATCC", "CRL-11147"], ["Malme-3M", "skin", "ATCC", "HTB-64"], ["SK-MEL-5", "skin", "ATCC", "HTB-70"], ["HuTu 80", "small_intestine", "ATCC", "HTB-40"], ["SK-UT-1", "soft_tissue", "ATCC", "HTB-114"], ["A-204", "soft_tissue", "ATCC", "HTB-82"], ["HT-1080", "soft_tissue", "ATCC", "CCL-121"], ["RD", "soft_tissue", "ATCC", "CCL-136"], ["TE 441.T", "soft_tissue", "ATCC", "CRL-7767"], ["G-402", "soft_tissue", "ATCC", "CRL-1440"], ["G-401", "soft_tissue", "ATCC", "CRL-1441"], ["GCT", "soft_tissue", "ATCC", "TIB-223"], ["SJCRH30 (RMS 13)", "soft_tissue", "ATCC", "CRL-2061"], ["SK-LMS-1", "soft_tissue", "ATCC", "HTB-88"], ["RH-30", "soft_tissue", "DSMZ", "ACC 489"], ["S-117", "soft_tissue", "DSMZ", "ACC 266"], ["KYM-1", "soft_tissue", "HSRRB", "JCRB0627"], ["SNU-16", "stomach", "ATCC", "CRL-5974"], ["KATO III", "stomach", "ATCC", "HTB-103"], ["NCI-N87 (N87)", "stomach", "ATCC", "CRL-5822"], ["KE-39", "stomach", "RIKEN", "RCB1434"], ["LMSU", "stomach", "RIKEN", "RCB1062"], ["NUGC-4", "stomach", "RIKEN", "RCB1939"], ["MKN45", "stomach", "HSRRB", "JCRB0254"], ["Hs 746T", "stomach", "ATCC", "HTB-135"], ["HGC-27", "stomach", "ECACC", "94042256"], ["AGS", "stomach", "ATCC", "CRL-1739"], ["SNU-1", "stomach", "ATCC", "CRL-5971"], ["SNU-5", "stomach", "ATCC", "CRL-5973"], ["SNU-216", "stomach", "KCLB", "n/a"], ["SNU-520", "stomach", "KCLB", "n/a"], ["SNU-601", "stomach", "KCLB", "n/a"], ["SNU-620", "stomach", "KCLB", "n/a"], ["SNU-668", "stomach", "KCLB", "n/a"], ["SNU-719", "stomach", "KCLB", "n/a"], ["ECC10", "stomach", "RIKEN", "RCB0983"], ["ECC12", "stomach", "RIKEN", "RCB1009"], ["GCIY", "stomach", "RIKEN", "RCB0555"], ["GSU", "stomach", "RIKEN", "RCB2278"], ["HuG1-N", "stomach", "RIKEN", "RCB1179"], ["KE-97", "stomach", "RIKEN", "RCB1435"], ["MKN7", "stomach", "RIKEN", "RCB0999"], ["SH-10-TC", "stomach", "RIKEN", "RCB1940"], ["TGBC11TKB", "stomach", "RIKEN", "RCB1148"], ["GSS", "stomach", "RIKEN", "RCB2277"], ["23132/87", "stomach", "DSMZ", "ACC 201"], ["FU97", "stomach", "HSRRB", "JCRB1074"], ["IM95", "stomach", "HSRRB", "JCRB1075.0"], ["MKN1", "stomach", "HSRRB", "JCRB0252"], ["MKN74", "stomach", "HSRRB", "JCRB0255"], ["NUGC-2", "stomach", "HSRRB", "JCRB0821"], ["NUGC-3", "stomach", "HSRRB", "JCRB0822"], ["OCUM-1", "stomach", "HSRRB", "JCRB0192"], ["RERF-GC-1B", "stomach", "HSRRB", "JCRB1009"], ["B-CPAP", "thyroid", "DSMZ", "ACC 273"], ["BHT-101", "thyroid", "DSMZ", "ACC 279"], ["CAL-62", "thyroid", "DSMZ", "ACC 448"], ["ML-1", "thyroid", "DSMZ", "ACC 464"], ["8505C", "thyroid", "HSRRB", "JCRB0826"], ["SW579", "thyroid", "ATCC", "HTB-107"], ["TT2609-C02", "thyroid", "DSMZ", "ACC 510"], ["TT", "thyroid", "ATCC", "CRL-1803"], ["CAL 27", "upper_aerodigestive_tract", "ATCC", "CRL-2095"], ["Detroit 562", "upper_aerodigestive_tract", "ATCC", "CCL-138"], ["SNU-899", "upper_aerodigestive_tract", "KCLB", "n/a"], ["CAL-33", "upper_aerodigestive_tract", "DSMZ", "ACC 447"], ["BICR 16", "upper_aerodigestive_tract", "ECACC", "6031001"], ["BICR 22", "upper_aerodigestive_tract", "ECACC", "4072106"], ["BICR 31", "upper_aerodigestive_tract", "ECACC", "4072107"], ["BICR 56", "upper_aerodigestive_tract", "ECACC", "6031002"], ["BICR 6", "upper_aerodigestive_tract", "ECACC", "5070501"], ["PE/CA-PJ15", "upper_aerodigestive_tract", "ECACC", "96121230"], ["PE/CA-PJ34 (clone C12)", "upper_aerodigestive_tract", "ECACC", "97062513"], ["PE/CA-PJ41 (clone D2)", "upper_aerodigestive_tract", "ECACC", "98020207"], ["PE/CA-PJ49", "upper_aerodigestive_tract", "ECACC", "60606"], ["SCC-4", "upper_aerodigestive_tract", "ATCC", "CRL-1624"], ["FaDu", "upper_aerodigestive_tract", "ATCC", "HTB-43"], ["SCC-25", "upper_aerodigestive_tract", "ATCC", "CRL-1628"], ["SCC-9", "upper_aerodigestive_tract", "ATCC", "CRL-1629"], ["SCC-15", "upper_aerodigestive_tract", "ATCC", "CRL-1623"], ["Hs 840.T", "upper_aerodigestive_tract", "ATCC", "CRL-7573"], ["SNU-1076", "upper_aerodigestive_tract", "KCLB", "n/a"], ["SNU-1214", "upper_aerodigestive_tract", "KCLB", "n/a"], ["YD-10B", "upper_aerodigestive_tract", "KCLB", "n/a"], ["BHY", "upper_aerodigestive_tract", "DSMZ", "ACC 404"], ["HN", "upper_aerodigestive_tract", "DSMZ", "ACC 417"], ["HSC-2", "upper_aerodigestive_tract", "HSRRB", "JCRB0622"], ["HSC-3", "upper_aerodigestive_tract", "HSRRB", "JCRB0623"], ["HSC-4", "upper_aerodigestive_tract", "HSRRB", "JCRB0624"], ["RT112/84", "urinary_tract", "ECACC", "85061106"], ["T-24", "urinary_tract", "ATCC", "HTB-4"], ["TCCSUP", "urinary_tract", "ATCC", "HTB-5"], ["BFTC-905", "urinary_tract", "DSMZ", "ACC 361"], ["RT-112", "urinary_tract", "DSMZ", "ACC 418"], ["VM-CUB1", "urinary_tract", "DSMZ", "ACC 400"], ["UM-UC-1", "urinary_tract", "ECACC", "6080301"], ["SW 780", "urinary_tract", "ATCC", "CRL-2169"], ["Hs 172.T", "urinary_tract", "ATCC", "CRL-7833"], ["HT-1376", "urinary_tract", "ATCC", "CRL-1472"], ["SCaBER", "urinary_tract", "ATCC", "HTB-3"], ["5637", "urinary_tract", "ATCC", "HTB-9"], ["J82", "urinary_tract", "ATCC", "HTB-1"], ["HT 1197", "urinary_tract", "ATCC", "CRL-1473"], ["RT4", "urinary_tract", "ATCC", "HTB-2"], ["UM-UC-3", "urinary_tract", "ATCC", "CRL-1749"], ["647-V", "urinary_tract", "DSMZ", "ACC 414"], ["BC-3C", "urinary_tract", "DSMZ", "ACC 450"], ["CAL-29", "urinary_tract", "DSMZ", "ACC 515"], ["JMSU-1", "urinary_tract", "DSMZ", "ACC 505"], ["KU-19-19", "urinary_tract", "DSMZ", "ACC 395"], ["SW-1710", "urinary_tract", "DSMZ", "ACC 426"], ["KMBC-2", "urinary_tract", "HSRRB", "JCRB1148"], ["CCG9911 (Wilms1)", "Wilms tumor", "MSKCC", ""], ["BON-1", "", "", ""], ["KRJ-1", "", "", ""], ["NLF", "", "", ""], ["SAOS-2", "", "", ""], ["SNU-1196", "", "KCLB", ""], ["SNU-1079", "", "KCLB", ""], ["SNU-869", "", "KCLB", ""], ["JN-DSRCT", "", "", ""], ["Gli-3T3", "", "BPS Bioscience", "60409"], ["J774.1", "", "ATCC", "TIB-67"], ["L-STS", "", "", ""], ["NALM6, clone G5", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-3273"], ["Ramos (RA 1)", "haematopoietic_and_lymphoid_tissue", "ATCC", "CRL-1596"]];
+
+    /* ── Readable labels for tissue sites ── */
+    var SITE_LABELS = {
+      'adenocarcinoma': 'Adenocarcinoma',
+      'autonomic_ganglia': 'Neuroblastoma / Autonomic Ganglia',
+      'B-Cells': 'B-Cells',
+      'biliary_tract': 'Biliary Tract',
+      'bone': 'Bone',
+      'breast': 'Breast',
+      'central_nervous_system': 'Brain / CNS',
+      'cervical carcinoma': 'Cervical',
+      'colon': 'Colon / Large Intestine',
+      'embryonal carcinoma': 'Embryonal Carcinoma',
+      'endometrium': 'Endometrium',
+      'endothelium': 'Endothelium',
+      'F': 'Colon / Large Intestine',
+      'general sarcoma': 'Sarcoma',
+      'GIST sarcoma': 'GIST',
+      'haematopoietic_and_lymphoid_tissue': 'Blood / Lymphoid',
+      'immortalized fibroblasts': 'Fibroblast (Immortalized)',
+      'kidney': 'Kidney',
+      'Kidney Wilms tumor': 'Kidney (Wilms Tumor)',
+      'Kyoto Pediatrics-Malignant Rhabdoid Tumor-NS': 'Rhabdoid Tumor',
+      'large_intestine': 'Colon / Large Intestine',
+      'liposarcoma': 'Liposarcoma',
+      'liver': 'Liver',
+      'lung': 'Lung',
+      'mammary epithelium': 'Breast (Normal Epithelium)',
+      'meningioma': 'Meningioma',
+      'neuroblastoma': 'Neuroblastoma',
+      'Neuroendocrine': 'Neuroendocrine',
+      'neurosphere': 'Neurosphere',
+      'Non-tumorgeneric': 'Non-Tumorigenic',
+      'oesophagus': 'Esophagus',
+      'osteosarcoma': 'Osteosarcoma',
+      'ovary': 'Ovary',
+      'pancreas': 'Pancreas',
+      'pleura': 'Pleura / Mesothelioma',
+      'prostate': 'Prostate',
+      'resistant': 'Drug-Resistant',
+      'rhabdomyosarcoma': 'Rhabdomyosarcoma',
+      'salivary_gland': 'Salivary Gland',
+      'sarcoma, malignant peripheral nerve sheath tumors': 'MPNST',
+      'skin': 'Skin / Melanoma',
+      'small_intestine': 'Small Intestine',
+      'soft_tissue': 'Soft Tissue',
+      'stomach': 'Stomach / Gastric',
+      'thyroid': 'Thyroid',
+      'upper_aerodigestive_tract': 'Head & Neck',
+      'urinary_tract': 'Bladder / Urinary Tract',
+      'Wilms tumor': 'Wilms Tumor'
+    };
+
+    function siteLabel(raw) {
+      return SITE_LABELS[raw] || raw || 'Other';
+    }
+
+    /* ── Synonym map: normalized alias → canonical name in DB ── */
+    var SYNONYMS = {
+      'mcf7': 'MCF7', 'mcf-7': 'MCF7', 'mcf 7': 'MCF7',
+      'a549': 'A-549', 'a 549': 'A-549',
+      'k562': 'K-562', 'k 562': 'K-562',
+      'hct116': 'HCT-116', 'hct 116': 'HCT-116',
+      'hct-116': 'HCT-116',
+      'u87': 'U-87 MG', 'u87mg': 'U-87 MG', 'u-87': 'U-87 MG', 'u-87mg': 'U-87 MG',
+      'u251': 'U-251 MG', 'u251mg': 'U-251 MG', 'u-251': 'U-251 MG', 'u-251mg': 'U-251 MG',
+      'thp1': 'THP-1', 'hl60': 'HL-60',
+      'bt474': 'BT-474', 'bt 474': 'BT-474',
+      'mdamb231': 'MDA-MB-231', 'mda mb 231': 'MDA-MB-231', 'mdamb468': 'MDA-MB-468',
+      'mda mb 468': 'MDA-MB-468',
+      'lncap': 'LNCaP clone FGC', 'lncap fgc': 'LNCaP clone FGC',
+      'pc3': 'PC-3', 'pc 3': 'PC-3',
+      'du145': 'DU 145', 'du 145': 'DU 145', 'du-145': 'DU 145',
+      'hepg2': 'Hep G2', 'hep g2': 'Hep G2', 'hep-g2': 'Hep G2',
+      'panc1': 'PANC-1', 'panc 1': 'PANC-1',
+      'caco2': 'C2BBe1 clone of Caco-2', 'caco-2': 'C2BBe1 clone of Caco-2',
+      'bxpc3': 'BxPC-3', 'bxpc-3': 'BxPC-3',
+      'aspc1': 'AsPC-1', 'aspc-1': 'AsPC-1',
+      'miapaca2': 'MIA PaCa-2', 'mia paca 2': 'MIA PaCa-2', 'mia paca-2': 'MIA PaCa-2',
+      'skov3': 'SK-OV-3', 'sk-ov3': 'SK-OV-3', 'sk ov 3': 'SK-OV-3',
+      'ht29': 'HT-29', 'ht 29': 'HT-29',
+      'sw480': 'SW480', 'sw 480': 'SW480',
+      'sw620': 'SW620', 'sw 620': 'SW620',
+      'lovo': 'LoVo',
+      'dld1': 'DLD-1', 'dld 1': 'DLD-1',
+      't47d': 'T-47D', 't 47d': 'T-47D',
+      'skbr3': 'SK-BR-3', 'sk-br3': 'SK-BR-3',
+      'mcf10a': 'MCF10A', 'mcf 10a': 'MCF10A', 'mcf-10a': 'MCF10A',
+      'vcap': 'VCaP',
+      '22rv1': '22Rv1',
+      'nb4': 'NB-4', 'nb 4': 'NB-4',
+      'kasumi1': 'KASUMI-1', 'kasumi 1': 'KASUMI-1',
+      'mv411': 'MV-4-11', 'mv 4 11': 'MV-4-11',
+      'molm13': 'MOLM-13', 'molm 13': 'MOLM-13',
+      'tf1': 'TF-1', 'tf 1': 'TF-1',
+      'u937': 'U-937', 'u 937': 'U-937',
+      'nalm6': 'NALM-6', 'nalm 6': 'NALM-6',
+      'rs411': 'RS4 (11)', 'rs4;11': 'RS4 (11)', 'rs4(11)': 'RS4 (11)',
+      't98g': 'T98G',
+      'ln229': 'LN-229', 'ln 229': 'LN-229',
+      'a172': 'A-172', 'a 172': 'A-172',
+      'caki1': 'Caki-1', 'caki 1': 'Caki-1',
+      '786o': '786-O', '786 o': '786-O',
+      'huh7': 'HuH-7', 'huh 7': 'HuH-7', 'huh-7': 'HuH-7',
+      'hep3b': 'Hep 3B2.1-7', 'hep 3b': 'Hep 3B2.1-7',
+      'shsy5y': 'SH-SY5H', 'sh-sy5y': 'SH-SY5H', 'shsy5h': 'SH-SY5H',
+      'caski': 'Ca Ski', 'ca ski': 'Ca Ski',
+      'siha': 'SiHa',
+      'fadu': 'FaDu',
+      'saos2': 'SAOS-2', 'saos 2': 'SAOS-2',
+      'hela': null,
+      'hek293': null, 'hek 293': null, 'hek293t': null, 'hek-293': null
+    };
+
+    /* ── Normalize string for comparison ── */
+    function norm(s) {
+      return s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    /* ── Levenshtein distance ── */
+    function levenshtein(a, b) {
+      var m = a.length, n = b.length;
+      if (m === 0) return n;
+      if (n === 0) return m;
+      var prev = [], curr = [], i, j;
+      for (j = 0; j <= n; j++) prev[j] = j;
+      for (i = 1; i <= m; i++) {
+        curr[0] = i;
+        for (j = 1; j <= n; j++) {
+          curr[j] = a[i - 1] === b[j - 1]
+            ? prev[j - 1]
+            : 1 + Math.min(prev[j - 1], prev[j], curr[j - 1]);
+        }
+        var tmp = prev; prev = curr; curr = tmp;
+      }
+      return prev[n];
+    }
+
+    /* ── Build lookup structures ── */
+    var cellLines = RAW.map(function (r) {
+      return { name: r[0], site: r[1], source: r[2], catNo: r[3] };
+    });
+
+    // Unique names (for fuzzy matching)
+    var uniqueNames = [];
+    var nameSet = {};
+    cellLines.forEach(function (cl) {
+      var n = norm(cl.name);
+      if (!nameSet[n]) {
+        nameSet[n] = cl.name;
+        uniqueNames.push({ norm: n, display: cl.name });
+      }
+    });
+
+    // Unique site labels for dropdown
+    var siteSet = {};
+    cellLines.forEach(function (cl) {
+      if (cl.site) {
+        var label = siteLabel(cl.site);
+        if (!siteSet[label]) siteSet[label] = cl.site;
+      }
+    });
+    // Handle sites that map to the same label
+    var siteLabelToRaws = {};
+    cellLines.forEach(function (cl) {
+      if (cl.site) {
+        var label = siteLabel(cl.site);
+        if (!siteLabelToRaws[label]) siteLabelToRaws[label] = [];
+        if (siteLabelToRaws[label].indexOf(cl.site) === -1) {
+          siteLabelToRaws[label].push(cl.site);
+        }
+      }
+    });
+    var sortedLabels = Object.keys(siteLabelToRaws).sort();
+
+    /* ── DOM refs ── */
+    var disclaimerCheck = document.getElementById('disclaimer-check');
+    var searchInput = document.getElementById('search-input');
+    var searchBtn = document.getElementById('search-btn');
+    var searchHint = document.getElementById('search-hint');
+    var searchResults = document.getElementById('search-results');
+    var cancerSelect = document.getElementById('cancer-type-select');
+    var browseResults = document.getElementById('browse-results');
+
+    /* ── Populate cancer type dropdown ── */
+    sortedLabels.forEach(function (label) {
+      var raws = siteLabelToRaws[label];
+      var count = cellLines.filter(function (cl) { return raws.indexOf(cl.site) !== -1; }).length;
+      var opt = document.createElement('option');
+      opt.value = label;
+      opt.textContent = label + ' (' + count + ')';
+      cancerSelect.appendChild(opt);
+    });
+
+    /* ── Enable/disable search on disclaimer check ── */
+    disclaimerCheck.addEventListener('change', function () {
+      var enabled = disclaimerCheck.checked;
+      searchInput.disabled = !enabled;
+      searchBtn.disabled = !enabled;
+      cancerSelect.disabled = !enabled;
+      searchHint.textContent = enabled
+        ? 'Handles common aliases and minor typos.'
+        : 'Check the box above to enable search.';
+      if (enabled) {
+        searchInput.focus();
+      } else {
+        searchResults.innerHTML = '';
+        browseResults.innerHTML = '';
+        searchInput.value = '';
+        cancerSelect.value = '';
+      }
+    });
+
+    /* ── Escape HTML ── */
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    /* ── Render a result table ── */
+    function renderTable(matches) {
+      if (matches.length === 0) return '';
+      var html = '<table class="tool-result-table"><thead><tr>'
+        + '<th>Cell Line</th><th>Tissue / Cancer Type</th><th>Source</th><th>Catalog #</th>'
+        + '</tr></thead><tbody>';
+      // Deduplicate for display
+      var seen = {};
+      matches.forEach(function (cl) {
+        var key = cl.name + '|' + cl.site + '|' + cl.source + '|' + cl.catNo;
+        if (seen[key]) return;
+        seen[key] = true;
+        html += '<tr><td><strong>' + esc(cl.name) + '</strong></td>'
+          + '<td>' + esc(siteLabel(cl.site)) + '</td>'
+          + '<td>' + esc(cl.source || '—') + '</td>'
+          + '<td>' + esc(cl.catNo || '—') + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    /* ── Main search logic ── */
+    function doSearch() {
+      var query = searchInput.value.trim();
+      if (!query) {
+        searchResults.innerHTML = '';
+        return;
+      }
+
+      var qNorm = norm(query);
+      if (qNorm.length === 0) {
+        searchResults.innerHTML = '';
+        return;
+      }
+
+      var html = '';
+
+      // 1. Check synonyms
+      var canonicalName = null;
+      var synonymUsed = false;
+      // Check exact synonym (with original casing preserved in input)
+      var qLower = query.toLowerCase().trim();
+      if (SYNONYMS.hasOwnProperty(qLower)) {
+        if (SYNONYMS[qLower] === null) {
+          // Known line we don't have
+          html = '<div class="tool-result-msg">'
+            + '<span class="tool-result-badge tool-result-badge--no">NOT AVAILABLE</span> '
+            + '<strong>' + esc(query) + '</strong> is not in the ATG-C collection.</div>';
+          searchResults.innerHTML = html;
+          return;
+        }
+        canonicalName = SYNONYMS[qLower];
+        synonymUsed = true;
+      }
+      // Also check normalized form
+      if (!canonicalName && SYNONYMS.hasOwnProperty(qNorm)) {
+        if (SYNONYMS[qNorm] === null) {
+          html = '<div class="tool-result-msg">'
+            + '<span class="tool-result-badge tool-result-badge--no">NOT AVAILABLE</span> '
+            + '<strong>' + esc(query) + '</strong> is not in the ATG-C collection.</div>';
+          searchResults.innerHTML = html;
+          return;
+        }
+        canonicalName = SYNONYMS[qNorm];
+        synonymUsed = true;
+      }
+
+      var searchNorm = canonicalName ? norm(canonicalName) : qNorm;
+
+      // 2. Exact matches (normalized)
+      var exact = cellLines.filter(function (cl) {
+        return norm(cl.name) === searchNorm;
+      });
+
+      if (exact.length > 0) {
+        html += '<div class="tool-result-msg">'
+          + '<span class="tool-result-badge tool-result-badge--yes">AVAILABLE</span> ';
+        if (synonymUsed) {
+          html += 'Matched <strong>' + esc(query) + '</strong> → <strong>' + esc(exact[0].name) + '</strong>';
+        } else {
+          html += '<strong>' + esc(exact[0].name) + '</strong> is in the ATG-C collection.';
+        }
+        html += '</div>';
+        html += renderTable(exact);
+        searchResults.innerHTML = html;
+        return;
+      }
+
+      // 3. Partial matches (starts with or contains)
+      var startsWith = cellLines.filter(function (cl) {
+        return norm(cl.name).indexOf(searchNorm) === 0 && norm(cl.name) !== searchNorm;
+      });
+      var contains = cellLines.filter(function (cl) {
+        var n = norm(cl.name);
+        return n.indexOf(searchNorm) > 0;
+      });
+
+      // 4. Fuzzy matches
+      var maxDist = qNorm.length <= 4 ? 1 : (qNorm.length <= 8 ? 2 : 3);
+      var fuzzy = [];
+      uniqueNames.forEach(function (entry) {
+        var d = levenshtein(searchNorm, entry.norm);
+        if (d > 0 && d <= maxDist) {
+          fuzzy.push({ name: entry.display, dist: d });
+        }
+      });
+      fuzzy.sort(function (a, b) { return a.dist - b.dist; });
+      fuzzy = fuzzy.slice(0, 8);
+
+      var fuzzyMatches = [];
+      fuzzy.forEach(function (f) {
+        cellLines.forEach(function (cl) {
+          if (cl.name === f.name) fuzzyMatches.push(cl);
+        });
+      });
+
+      if (startsWith.length > 0 || contains.length > 0) {
+        var partial = startsWith.concat(contains);
+        html += '<div class="tool-result-msg">'
+          + '<span class="tool-result-badge tool-result-badge--maybe">PARTIAL MATCH</span> '
+          + 'No exact match for <strong>' + esc(query) + '</strong>, but we found ' + partial.length + ' partial match' + (partial.length > 1 ? 'es' : '') + ':</div>';
+        html += renderTable(partial.slice(0, 20));
+        if (partial.length > 20) {
+          html += '<p class="tool-search-hint" style="margin-top:8px">' + (partial.length - 20) + ' more results not shown. Try a more specific query.</p>';
+        }
+      } else if (fuzzyMatches.length > 0) {
+        html += '<div class="tool-result-msg">'
+          + '<span class="tool-result-badge tool-result-badge--maybe">DID YOU MEAN</span> '
+          + 'No exact match for <strong>' + esc(query) + '</strong>. Close matches:</div>';
+        html += renderTable(fuzzyMatches);
+      } else {
+        html += '<div class="tool-result-msg">'
+          + '<span class="tool-result-badge tool-result-badge--no">NOT FOUND</span> '
+          + '<strong>' + esc(query) + '</strong> is not in the ATG-C collection. '
+          + 'If you believe we should have this line, please <a href="mailto:genome@columbia.edu">contact us</a>.</div>';
+      }
+
+      searchResults.innerHTML = html;
+    }
+
+    /* ── Event listeners ── */
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    var debounceTimer = null;
+    searchInput.addEventListener('input', function () {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(doSearch, 350);
+    });
+
+    /* ── Cancer type browse ── */
+    cancerSelect.addEventListener('change', function () {
+      var label = cancerSelect.value;
+      if (!label) {
+        browseResults.innerHTML = '';
+        return;
+      }
+      var raws = siteLabelToRaws[label];
+      if (!raws) {
+        browseResults.innerHTML = '';
+        return;
+      }
+      var matches = cellLines.filter(function (cl) {
+        return raws.indexOf(cl.site) !== -1;
+      });
+      // Sort by name
+      matches.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      });
+      var html = '<div class="tool-result-msg"><strong>' + matches.length + '</strong> cell line' + (matches.length !== 1 ? 's' : '') + ' available for <strong>' + esc(label) + '</strong>:</div>';
+      html += renderTable(matches);
+      browseResults.innerHTML = html;
+    });
+
+  })();
+  </script>
+
+</body>
+</html>
