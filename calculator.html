@@ -411,6 +411,7 @@
 
     /** Populate a <select> with premade panel options (simple price-per-run). */
     function populatePremade(selectEl, panels) {
+      var prev = selectEl.value;
       selectEl.innerHTML = '';
       var keys = Object.keys(panels);
       keys.forEach(function (name) {
@@ -419,11 +420,13 @@
         opt.textContent = name + ' (' + fmt(panels[name]) + ' per run)';
         selectEl.appendChild(opt);
       });
+      if (prev && panels[prev] !== undefined) selectEl.value = prev;
       return keys.length;
     }
 
     /** Populate a <select> with kit-panel options (price for N runs). */
     function populateKit(selectEl, entries) {
+      var prev = selectEl.value;
       selectEl.innerHTML = '';
       entries.forEach(function (e) {
         var name = e[0];
@@ -433,6 +436,8 @@
         opt.textContent = name + ' (' + fmt(details.price) + ' for ' + details.runs + ' runs)';
         selectEl.appendChild(opt);
       });
+      var stillExists = entries.some(function (e) { return e[0] === prev; });
+      if (prev && stillExists) selectEl.value = prev;
       return entries.length;
     }
 
