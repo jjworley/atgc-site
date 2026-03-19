@@ -99,6 +99,79 @@
       padding: 10px 0;
     }
 
+    /* ── Checkbox & discount controls ────────────────────── */
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
+      cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #2563EB;
+    }
+
+    .discount-section {
+      margin-top: -8px;
+      margin-bottom: 24px;
+      padding-left: 24px;
+    }
+
+    .discount-section .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 400;
+      color: #374151;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+
+    .form-group input[type="number"]::-webkit-inner-spin-button,
+    .form-group input[type="number"]::-webkit-outer-spin-button {
+      opacity: 1;
+    }
+
+    .form-group input[type="number"]:hover {
+      border-color: #9CA3AF;
+    }
+
+    .form-group input[type="number"]:focus {
+      outline: none;
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .discount-note {
+      font-size: 13px;
+      color: #6B7280;
+      font-style: italic;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .result-line.discount {
+      color: #059669;
+    }
+
+    .result-line.discount .value {
+      font-weight: 500;
+    }
+
     /* ── Results ──────────────────────────────────────────── */
     .results {
       margin-top: 32px;
@@ -233,6 +306,37 @@
     <p class="calc-page-subtitle">Estimate the cost of your Xenium spatial transcriptomics project.</p>
 
     <div class="calc-card">
+
+      <!-- Reagent Discount -->
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="hasDiscount">
+          <span>Do you have a reagent discount from 10x Genomics?</span>
+        </label>
+      </div>
+
+      <div class="discount-section" id="discountOptions" style="display:none;">
+        <div class="form-group">
+          <label for="discountType">Discount applies to</label>
+          <select id="discountType">
+            <option value="run">Run reagents</option>
+            <option value="panel">Custom panel</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="runDiscountGroup">
+          <label for="runDiscountPct">Run reagent discount (%)</label>
+          <input type="number" id="runDiscountPct" min="5" max="100" step="1" value="10">
+        </div>
+
+        <div class="form-group" id="panelDiscountGroup" style="display:none;">
+          <label for="panelDiscountPct">Custom panel discount (%)</label>
+          <input type="number" id="panelDiscountPct" min="5" max="100" step="1" value="10">
+        </div>
+
+        <p class="discount-note">Our prices already include a 5% discount off list price. Only the additional discount above 5% will be applied.</p>
+      </div>
 
       <!-- Version -->
       <div class="form-group">
@@ -391,6 +495,14 @@
 
     var elResultLines      = document.getElementById('resultLines');
 
+    var elHasDiscount      = document.getElementById('hasDiscount');
+    var elDiscountOptions  = document.getElementById('discountOptions');
+    var elDiscountType     = document.getElementById('discountType');
+    var elRunDiscountGroup = document.getElementById('runDiscountGroup');
+    var elRunDiscountPct   = document.getElementById('runDiscountPct');
+    var elPanelDiscountGroup = document.getElementById('panelDiscountGroup');
+    var elPanelDiscountPct = document.getElementById('panelDiscountPct');
+
     /* ================================================================
        HELPERS
        ================================================================ */
@@ -398,6 +510,17 @@
     /** Format a number as US-dollar string, e.g. "$1,234.56" */
     function fmt(n) {
       return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /** Show/hide discount sub-controls based on checkbox and dropdown state. */
+    function updateDiscountUI() {
+      var checked = elHasDiscount.checked;
+      elDiscountOptions.style.display = checked ? '' : 'none';
+      if (checked) {
+        var type = elDiscountType.value;
+        elRunDiscountGroup.style.display   = (type === 'run' || type === 'both') ? '' : 'none';
+        elPanelDiscountGroup.style.display = (type === 'panel' || type === 'both') ? '' : 'none';
+      }
     }
 
     /** Return entries of a kit-panel object, filtered for 8-run kits when numRuns >= 3 */
@@ -450,6 +573,18 @@
       var numRuns   = parseInt(elNumRuns.value, 10);
       var panelType = elPanelType.value;
 
+      // ── Discount settings ────────────────────────────────
+      var hasDiscount      = elHasDiscount.checked;
+      var discountType     = elDiscountType.value;
+      var applyRunDiscount   = hasDiscount && (discountType === 'run' || discountType === 'both');
+      var applyPanelDiscount = hasDiscount && (discountType === 'panel' || discountType === 'both');
+      // Entered percentages (clamped 5–100)
+      var runDiscountPct   = applyRunDiscount   ? Math.max(5, Math.min(100, parseFloat(elRunDiscountPct.value)   || 5)) : 0;
+      var panelDiscountPct = applyPanelDiscount ? Math.max(5, Math.min(100, parseFloat(elPanelDiscountPct.value) || 5)) : 0;
+      // Our prices already include a 5% discount off list — only the additional portion applies
+      var effectiveRunPct   = Math.max(0, runDiscountPct - 5);
+      var effectivePanelPct = Math.max(0, panelDiscountPct - 5);
+
       // ── Pick the right panel catalogues ──────────────────
       var premadeCat    = version === 'v1' ? v1PremadePanels    : primePremadePanels;
       var standaloneCat = version === 'v1' ? v1StandalonePanels : primeStandalonePanels;
@@ -488,9 +623,15 @@
       // ── Calculate costs ──────────────────────────────────
       var baseRunCost  = baseRunCosts[version];
       var totalRunCost = baseRunCost * numRuns;
-      var panelCosts   = [];
+      var runDiscount  = 0;
 
-      // Premade panel cost (per-run pricing)
+      if (applyRunDiscount && effectiveRunPct > 0) {
+        runDiscount = totalRunCost * (effectiveRunPct / 100);
+      }
+
+      var panelCosts = [];
+
+      // Premade panel cost (per-run pricing — not subject to custom panel discount)
       if (showPremade && Object.keys(premadeCat).length > 0) {
         var selectedPremade = elPremadeSelect.value;
         if (selectedPremade && premadeCat[selectedPremade] !== undefined) {
@@ -498,7 +639,8 @@
           panelCosts.push({
             label: 'Pre-made Panel',
             cost:  perRun * numRuns,
-            desc:  numRuns + ' run' + (numRuns > 1 ? 's' : '') + ' @ ' + fmt(perRun) + '/run'
+            desc:  numRuns + ' run' + (numRuns > 1 ? 's' : '') + ' @ ' + fmt(perRun) + '/run',
+            isCustom: false
           });
         }
       }
@@ -512,7 +654,8 @@
           panelCosts.push({
             label: 'Standalone Custom Panel',
             cost:  info.price * mult,
-            desc:  mult + ' \u00d7 ' + info.runs + '-run kit' + (mult > 1 ? 's' : '')
+            desc:  mult + ' \u00d7 ' + info.runs + '-run kit' + (mult > 1 ? 's' : ''),
+            isCustom: true
           });
         }
       }
@@ -526,13 +669,26 @@
           panelCosts.push({
             label: 'Custom Add-on Panel',
             cost:  aInfo.price * aMult,
-            desc:  aMult + ' \u00d7 ' + aInfo.runs + '-run kit' + (aMult > 1 ? 's' : '')
+            desc:  aMult + ' \u00d7 ' + aInfo.runs + '-run kit' + (aMult > 1 ? 's' : ''),
+            isCustom: true
           });
         }
       }
 
+      // Apply custom panel discount (effective = entered − 5% already included)
+      var panelDiscount = 0;
+      if (applyPanelDiscount && effectivePanelPct > 0) {
+        panelCosts.forEach(function (p) {
+          if (p.isCustom) {
+            p.discountAmount = p.cost * (effectivePanelPct / 100);
+            panelDiscount += p.discountAmount;
+          }
+        });
+      }
+
       var totalPanelCost = panelCosts.reduce(function (sum, p) { return sum + p.cost; }, 0);
-      var totalPrice     = totalRunCost + totalPanelCost;
+      var totalDiscount  = runDiscount + panelDiscount;
+      var totalPrice     = totalRunCost + totalPanelCost - totalDiscount;
       var perRunPrice    = totalPrice / numRuns;
 
       // ── Render results ───────────────────────────────────
@@ -544,7 +700,15 @@
       html += '  <span class="value">' + fmt(baseRunCost) + ' &times; ' + numRuns + ' = ' + fmt(totalRunCost) + '</span>';
       html += '</div>';
 
-      // Panel cost lines
+      // Run reagent discount line
+      if (applyRunDiscount && effectiveRunPct > 0) {
+        html += '<div class="result-line discount">';
+        html += '  <span class="label">Run reagent discount (' + runDiscountPct + '% &minus; 5% included = ' + effectiveRunPct + '%)</span>';
+        html += '  <span class="value">&minus;' + fmt(runDiscount) + '</span>';
+        html += '</div>';
+      }
+
+      // Panel cost lines (with per-panel discount shown inline)
       panelCosts.forEach(function (p) {
         html += '<div class="result-line">';
         html += '  <span class="label">' + p.label + '</span>';
@@ -554,6 +718,12 @@
         html += '  <span class="label">' + p.desc + '</span>';
         html += '  <span class="value"></span>';
         html += '</div>';
+        if (p.discountAmount && p.discountAmount > 0) {
+          html += '<div class="result-line discount">';
+          html += '  <span class="label">Custom panel discount (' + panelDiscountPct + '% &minus; 5% included = ' + effectivePanelPct + '%)</span>';
+          html += '  <span class="value">&minus;' + fmt(p.discountAmount) + '</span>';
+          html += '</div>';
+        }
       });
 
       // Divider + total
@@ -595,7 +765,14 @@
     elStandaloneSelect.addEventListener('change', update);
     elAddonSelect.addEventListener('change', update);
 
+    // Discount controls
+    elHasDiscount.addEventListener('change', function () { updateDiscountUI(); update(); });
+    elDiscountType.addEventListener('change', function () { updateDiscountUI(); update(); });
+    elRunDiscountPct.addEventListener('input', update);
+    elPanelDiscountPct.addEventListener('input', update);
+
     // Initial render
+    updateDiscountUI();
     update();
 
   })();
